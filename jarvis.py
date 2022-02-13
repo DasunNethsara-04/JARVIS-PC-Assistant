@@ -327,13 +327,6 @@ def run():
 			talk('Unknown error found on opening Windows System Restore Utility.')
 			pass
 
-	#elif 'bitlocker' in command:
-		#talk('Opening Windows Bit Locker Drive Utility. Just a moment sir.')
-		#try:
-			#os.startfile('C:\\Windows\\System32\\repair-bde.exe')
-		#except:
-			#talk('Sorry sir, The Windows Bit Locker Drive Utility is not available on your Operating System!')
-
 	elif 'mrt' in command:
 		talk('Opening Microsoft Malicious software Removal Tool. Just a moment sir')
 		try:
@@ -361,59 +354,6 @@ def run():
 		talk('Opening Windows Diskpart utility')
 		os.startfile('C:\\Windows\\System32\\diskpart.exe')
 	
-
-	# application
-
-	elif 'vlc' in command:
-		talk('Opening VLC Media Player')
-		path = 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'
-		os.startfile(os.path.join(path))
-
-	elif 'aimp' in command:
-		talk('Opening AIMP Music Player')
-		os.startfile('C:\\Program Files (x86)\\AIMP\\AIMP.exe')
-
-	elif 'zoom' in command:
-		talk('Opening Zoom Cloud Meeting Service')
-		path = '\\AppData\\Roaming\\Zoom\\bin\\zoom.exe'
-		os.startfile(os.path.join(os.environ['USERPROFILE']+path))
-
-	elif 'sublime text' in command:
-		talk('Opening Sublime Text')
-		path = 'C:\\Program Files\\Sublime Text\\sublime_text.exe'
-		os.startfile(os.path.join(path))
-
-	elif 'pyscripter' in command:
-		talk('Opening PyScripter IDE')
-		path = 'C:\\Program Files\\PyScripter\\PyScripter.exe'
-		os.startfile(os.path.join(path))
-
-	elif 'vs code' in command:
-		talk('Opening Visual Studio Code')
-		path = '\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'
-		os.startfile(os.path.join(os.environ['USERPROFILE'] + path))
-
-	elif 'smart defrag' in command:
-		talk('Opening Smart Defrag. The Disk Defragmenting Tool')
-		path = 'C:\\Program Files (x86)\\IObit\\Smart Defrag\\SmartDefrag.exe'
-		os.startfile(os.path.join(path))
-
-	elif 'word' in command:
-		talk('OPening Microsoft Office Word')
-		path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\Word 2013.lnk'
-		os.startfile(os.path.join(path))
-
-	elif 'powerpoint' in command:
-		talk('OPening Microsoft Office PowerPoint')
-		path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\PowerPoint 2013.lnk'
-		os.startfile(os.path.join(path))
-
-	elif 'excel' in command:
-		talk('OPening Microsoft Office Excel')
-		path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\Excel 2013.lnk'
-		os.startfile(os.path.join(path))
-
-
 	else:
 		talk('Sorry sir, This command is incorrect or not defined! To get a help, You need to type, "help" on the typing field.')
 
@@ -505,10 +445,6 @@ root.resizable(0, 0)
 anim = MyLabel(root, 'anim.gif')
 anim.pack()
 root.config(bg='black')
-
-
-#UI Widgets
-#Label(root, text='JARVIS at your service', font=('Calibri', 20), bg='black', fg='red').place(x=35, y=0)
 
 entry = Entry(root, font=('Calibri', 14, 'bold'), bd=2, justify='center', width=24)
 entry.pack()
