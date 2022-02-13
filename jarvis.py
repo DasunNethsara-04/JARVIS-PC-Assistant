@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 # Name:        JARVIS PC Assistant
-# Version:	   6.2.7
+# Version:	6.2.7
 # Purpose:     Just for fun
 # Author:      Dasun Nethsara
 # Created:     13/02/2022
@@ -21,7 +21,6 @@ import psutil
 import pyautogui
 import webbrowser
 import ctypes
-#import speedtest
 import wikipedia
 
 
@@ -72,26 +71,6 @@ def upTime():
 		messagebox.showinfo('JARVIS - PC Usage', f'PC Usage\n\nDays:\t\t{days}\nHours:\t\t{hours}\nMinutes:\t\t{mins}')
 
 
-'''def speedtest_():
-	talk('Initializing Speed Test. Just a moment sir. This might take a while')
-	talk('Connecting to the server. Getting Ready to collect the data')
-	try:
-		test = speedtest.Speedtest()
-		upload = round(test.upload() / (1024 * 1024), 2)
-		download = round(test.download() / (1024 * 1024), 2)
-		servername = []
-		test.get_servers(servername)
-		ping = round(test.results.ping, 2)
-		talk('Data collecting completed. All the Information were calculated in Mega Bits Per Second (Mb p s)')
-		talk('Here is the Analysis report. Let me speak it sir.')
-		talk('Your connection\'s Download speed is at about ' + str(download)+'Mb p s')
-		talk('Upload speed is at about ' + str(upload)+'Mb p s')
-		talk('and the Ping is at about ' + str(ping)+'')
-		msg = 'Internet Connection Speed\n\nDownload:\t'+str(download)+'Mbps\nUpload:\t\t'+str(upload)+'Mbps\nPing:\t\t'+str(ping)
-		messagebox.showinfo('Internet Speed', msg)
-	except:
-		talk('Make sure you\'re connected with the Internet.')
-		pass'''
 
 def run():
 	command = take_command()
@@ -118,9 +97,6 @@ def run():
 
 	elif 'pc usage' in command:
 		upTime()
-
-	elif 'speedtest' in command:
-		speedtest_()
 
 	elif 'ss' in command:
 		talk('Taking a Screenshot')
@@ -190,10 +166,6 @@ def run():
 		except:
 			talk('Make sure you\'re connected with the Internet or Try a different word')
 			pass
-
-	elif 'pomodoro' in command:
-		talk('Opening Pomodoro Timer. This Application helps you to study focused well.')
-		os.startfile('src\\pomodoro.exe')
 
 	elif 'play' in command:
 		try:
