@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------------
 # Name:        JARVIS PC Assistant
-# Version:	6.2.7
+# Version:     7.0.2
 # Purpose:     Just for fun
 # Author:      Dasun Nethsara
-# Created:     13/02/2022
+# Created:     21/02/2022
 # Copyright:   (c) Dasun Nethsara 2022
 # Licence:     free software
 #-------------------------------------------------------------------------------
@@ -13,7 +13,6 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog, ttk
 from PIL import Image, ImageTk
-from playsound import playsound
 import datetime
 import pyttsx3
 import os
@@ -42,12 +41,12 @@ def talk(audio):
 
 def take_command():
 	try:
-		if entry.get() != '':
-			command = str(entry.get())
+		if combo.get() != '':
+			command = str(combo.get())
 			command = command.lower()
 			return command
 		else:
-			messagebox.showwarning('Warning', 'Please type a command on the Input field')
+			messagebox.showwarning('Warning', 'Please select a command on the Combobox')
 	except:
 		pass
 
@@ -70,11 +69,8 @@ def upTime():
 		talk('Sir, You have used your computer for ' + str(days) + ' days, ' + str(hours) + ' hours, and ' + str(mins) + ' minuts.')
 		messagebox.showinfo('JARVIS - PC Usage', f'PC Usage\n\nDays:\t\t{days}\nHours:\t\t{hours}\nMinutes:\t\t{mins}')
 
-
-
-def run():
+def run(e):
 	command = take_command()
-	#talk('Command is taken by JARVIS. The command is ' + command)
 
 	if 'time' in command:
 		try:
@@ -89,11 +85,11 @@ def run():
 		talk('Hello sir! I am JARVIS. Your PC Assistant. I am here to assist you with the varieties tasks is best I can!')
 
 	elif 'version' in command:
-		talk('JARVIS PC Assistant version 6.1.3')
-		messagebox.showinfo("JARVIS Assistant", "JARVIS PC Assistant\nversion 6.1.3")
+		talk('JARVIS PC Assistant version 7.0.2')
+		messagebox.showinfo("JARVIS Assistant", "JARVIS PC Assistant\nversion 7.0.2")
 
 	elif '=' in command:
-		talk('The answer is ' + str(eval(command.replace('=', ''))) + 'sir.')
+		talk('The answer is ' + str(round(eval(command.replace('=', '')), 3)) + 'sir.')
 
 	elif 'pc usage' in command:
 		upTime()
@@ -167,13 +163,33 @@ def run():
 			talk('Make sure you\'re connected with the Internet or Try a different word')
 			pass
 
-	elif 'play' in command:
+	elif 'pomodoro' in command:
+		talk('Opening Pomodoro Timer. This Application helps you to study focused well.')
+		os.startfile('src\\pomodoro.exe')
+
+	elif 'song' in command:
 		try:
+			talk('Please select a Music to play')
 			path = filedialog.askopenfilename(filetypes=[('MP3 Files', '*.mp3')], defaultextension=('.mp3'), title='Choose a Song to play')
-			talk('Playing the song you selected! Just a moment')
-			os.startfile(os.path.join(path))
+			if path == '':
+				talk('Process canceled by user.')
+				pass
+			else:
+				talk('Playing the song you selected! Just a moment')
+				os.startfile(os.path.join(path))
 		except:
-			talk('Process canceled by user.')
+			pass
+	elif 'video' in command:
+		try:
+			talk('Please select a video file to play')
+			path = filedialog.askopenfilename(filetypes=[('MP4 Files', '*.mp4')], defaultextension=('.mp4'), title='Choose a Video to play')
+			if path == '':
+				talk('Process canceled by user.')
+				pass
+			else:
+				talk('Playing the video you selected! Just a moment')
+				os.startfile(os.path.join(path))
+		except:
 			pass
 
 	elif 'settings' in command:
@@ -354,18 +370,62 @@ def run():
 		talk('Opening Windows Diskpart utility')
 		os.startfile('C:\\Windows\\System32\\diskpart.exe')
 	
+
+	# application
+
+	elif 'vlc' in command:
+		talk('Opening VLC Media Player')
+		path = 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'
+		os.startfile(os.path.join(path))
+
+	elif 'aimp' in command:
+		talk('Opening AIMP Music Player')
+		os.startfile('C:\\Program Files (x86)\\AIMP\\AIMP.exe')
+
+	elif 'zoom' in command:
+		talk('Opening Zoom Cloud Meeting Service')
+		path = '\\AppData\\Roaming\\Zoom\\bin\\zoom.exe'
+		os.startfile(os.path.join(os.environ['USERPROFILE']+path))
+
+	elif 'sublime text' in command:
+		talk('Opening Sublime Text')
+		path = 'C:\\Program Files\\Sublime Text\\sublime_text.exe'
+		os.startfile(os.path.join(path))
+
+	elif 'pyscripter' in command:
+		talk('Opening PyScripter IDE')
+		path = 'C:\\Program Files\\PyScripter\\PyScripter.exe'
+		os.startfile(os.path.join(path))
+
+	elif 'vs code' in command:
+		talk('Opening Visual Studio Code')
+		path = '\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'
+		os.startfile(os.path.join(os.environ['USERPROFILE'] + path))
+
+	elif 'smart defrag' in command:
+		talk('Opening Smart Defrag. The Disk Defragmenting Tool')
+		path = 'C:\\Program Files (x86)\\IObit\\Smart Defrag\\SmartDefrag.exe'
+		os.startfile(os.path.join(path))
+
+	elif 'word' in command:
+		talk('OPening Microsoft Office Word')
+		path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\Word 2013.lnk'
+		os.startfile(os.path.join(path))
+
+	elif 'powerpoint' in command:
+		talk('OPening Microsoft Office PowerPoint')
+		path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\PowerPoint 2013.lnk'
+		os.startfile(os.path.join(path))
+
+	elif 'excel' in command:
+		talk('OPening Microsoft Office Excel')
+		path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\Excel 2013.lnk'
+		os.startfile(os.path.join(path))
+
+
 	else:
-		talk('Sorry sir, This command is incorrect or not defined! To get a help, You need to type, "help" on the typing field.')
+		talk('Sorry sir, This command is incorrect or not defined! To get a help, You need to select, "Help" on the Combobox.')
 
-
-
-#########################################################################################################
-
-##########################################		Greetings		##########################################
-
-
-#pygame.mixer.music.load('src/greet.mp3')
-#pygame.mixer.music.play()
 
 hour = datetime.datetime.now().hour
 
@@ -393,9 +453,6 @@ except:
 
 talk(f'Hello {username}. I am JARVIS! Your PC Assistant')
 
-##########################################################################################################
-
-##########################################	  Main Class	##############################################
 class MyLabel(Label):
 	def __init__(self, master, filename):
 		im = Image.open(filename)
@@ -439,16 +496,79 @@ class MyLabel(Label):
 
 root = Tk()
 root.title('JARVIS Assistant')
-root.geometry('260x260')
+root.geometry('260x230')
 ico = root.iconbitmap('icon.ico')
 root.resizable(0, 0)
 anim = MyLabel(root, 'anim.gif')
 anim.pack()
 root.config(bg='black')
 
-entry = Entry(root, font=('Calibri', 14, 'bold'), bd=2, justify='center', width=24)
-entry.pack()
 
-Button(root, text='OK', font=('Calibri', 15), fg='black', bg='dark red', bd=0, width=7, command=run).pack(pady=10)
+values_ = (			'Time',
+					'Date',
+					'About_You',
+					'Version',
+					'=',
+					'PC Usage',
+					'SS',
+					'Facebook',
+					'Instagram',
+					'YouTube',
+					'Stackoverflow',
+					'Google',
+					'CPU',
+					'Cores',
+					'Per-RAM',
+					'Avil-RAM',
+					'Used-RAM',
+					'Total-RAM',
+					'Offline',
+					'Pomodoro',
+					'Help',
+					'Song',
+					'Video',
+					'Settings',
+					'Shutdown',
+					'Restart',
+					'Log Off',
+					'Lock',
+					'Hibernate',
+					'Wiki',
+					'This PC',
+					'Notepad',
+					'About Windows',
+					'Wordpad',
+					'Manage',
+					'Programs',
+					'Sys-Info',
+					'CMD',
+					'taskmgr',
+					'regedit',
+					'Sys Vol',
+					'Services',
+					'Restore',
+					'MRT',
+					'Defrag',
+					'Ctrl Panel',
+					'cleanmgr',
+					'CharMap',
+					'diskpart',
+					'VLC',
+					'AIMP',
+					'ZOOM',
+					'Sublime Text',
+					'PyScripter',
+					'VS Code',
+					'Smart Defrag',
+					'Word',
+					'PowerPoint',
+					'Excel')
+
+combo = ttk.Combobox(root, width=21, values=values_, state='w', font=('Calibri', 14, 'bold'), justify='center')
+combo.pack()
+combo.set('Select a Command')
+
+
+root.bind('<Return>', run)
 
 root.mainloop()
