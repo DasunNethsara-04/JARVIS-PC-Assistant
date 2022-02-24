@@ -256,7 +256,7 @@ def run(e):
 	elif 'restart' in command:
 		talk('Closing JARVIS PC Assistant')
 		talk('Initializing shutdown sequence. Restarting System.')
-		os.system('shutdown.exe -s -t 00')
+		os.system('shutdown.exe -r -t 00')
 
 	elif 'log off' in command:
 		talk('Closing JARVIS PC Assistant')
