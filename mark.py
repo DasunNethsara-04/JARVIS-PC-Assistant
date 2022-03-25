@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------------
-# Name:        MARK 8 (MRK8)
-# Version:	   8.1.1
+# Name:        MARK 9 (MRK IX)
+# Version:     9.2.0
 # Purpose:     Just for fun
 # Author:      Dasun Nethsara
-# Created:     14/03/2022
+# Created:     24/03/2022
 # Copyright:   (c) Dasun Nethsara 2022
 # Licence:     free software
 #-------------------------------------------------------------------------------
@@ -13,7 +13,9 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog, ttk
 from PIL import Image, ImageTk
+from bs4 import BeautifulSoup
 from zipfile import ZipFile
+import requests
 import datetime
 import pyttsx3
 import os
@@ -153,6 +155,19 @@ def organize():
 		talk('Process canceled by user.')
 		pass
 
+def getTemp():
+	talk('Just a moment sir.')
+	try:
+		location = take_command().replace('temperature in', '')
+		search = f"temperature in {location}"
+		url = f'https://www.google.com/search?q={search}'
+		r = requests.get(url)
+		data = BeautifulSoup(r.text, "html.parser")
+		temp = data.find("div", class_="BNeawe").text
+		talk(f'The Current {search} is {temp} sir.')
+	except:
+		talk('Make sure you are connected with the Internet.')
+
 
 def run(e):
 	command = take_command()
@@ -166,12 +181,12 @@ def run(e):
 	elif 'date' in command:
 		talk('Today is ' + str(datetime.date.today()) + ' sir.')
 
-	elif 'about_you' in command:
+	elif 'about you' in command:
 		talk('Hello sir! I am JARVIS. Your PC Assistant. I am here to assist you with the varieties tasks is best I can. ')
 
 	elif 'version' in command:
-		talk('MARK 8 version 8.1.2')
-		messagebox.showinfo("MARK", "MARK 8 (MRK8) PC Assisting Application\n\nApplication Version:\t8\nAssistant Version:\t\t7.0.2")
+		talk('MARK 9 version 9.2.0')
+		messagebox.showinfo("MARK", "MARK 9 (MRK IX) PC Assisting Application\n\nApplication Version:\t9\nAssistant Version:\t\t9.2.0")
 
 	elif '=' in command:
 		talk('The answer is ' + str(round(eval(command.replace('=', '')), 3)) + ' sir.')
@@ -179,7 +194,7 @@ def run(e):
 	elif 'pc usage' in command:
 		upTime()
 
-	elif 'ss' in command:
+	elif 'screenshot' in command:
 		talk('Taking a Screenshot')
 		ss = pyautogui.screenshot()
 		ss.save(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
@@ -215,27 +230,30 @@ def run(e):
 	elif 'cpu' in command:
 		talk('CPU is at ' + str(psutil.cpu_percent()) + '% sir.')
 
-	elif 'per-ram' in command:
+	elif 'ram percentage' in command:
 		talk('System Memory is at ' + str(psutil.virtual_memory().percent) + '% sir.')
 
 	elif 'cores' in command:
 		talk('Sir, There are ' + str(psutil.cpu_count()) + 'logical CPUs in your Computer')
 
-	elif 'avil-ram' in command:
+	elif 'available ram' in command:
 		ram = round((psutil.virtual_memory().available) / (1024 ** 3), 2)
 		talk('Available System Memory is ' + str(ram) + 'GB')
 
-	elif 'used-ram' in command:
+	elif 'used ram' in command:
 		ram = round((psutil.virtual_memory().used) / (1024 ** 3), 2)
 		talk('Used System Memory is ' + str(ram) + 'GB')
 
-	elif 'total-ram' in command:
+	elif 'total ram' in command:
 		ram = round((psutil.virtual_memory().total) / (1024 ** 3), 2)
 		talk('Total System Memory is ' + str(ram) + 'GB')
 
 	elif 'offline' in command:
 		talk('Thank You for working with me. See you again sir!')
 		root.destroy()
+
+	elif 'temperature in' in command:
+		getTemp()
 
 	elif 'wiki' in command:
 		info = command.replace('wiki ', '')
@@ -252,13 +270,13 @@ def run(e):
 		talk('Opening Pomodoro Timer. This Application helps you to study focused well.')
 		os.startfile('src\\pomodoro.exe')
 
-	elif 'play_song' in command:
+	elif 'play song' in command:
 		playSong()
 
-	elif 'pause_song' in command:
+	elif 'pause song' in command:
 		pauseSong()
 
-	elif 'stop_song' in command:
+	elif 'stop song' in command:
 		stopSong()
 
 	elif 'video' in command:
@@ -330,7 +348,7 @@ def run(e):
 		path = 'C:\\Windows\\write.exe'
 		os.startfile(os.path.join(path))
 
-	elif 'manage' in command:
+	elif 'management' in command:
 		talk('Opening Windows System Management Utility')
 		path = 'C:\\WINDOWS\\System32\\compmgmt.msc'
 		os.startfile(os.path.join(path))
@@ -340,27 +358,27 @@ def run(e):
 		path = 'C:\\WINDOWS\\System32\\appwiz.cpl'
 		os.startfile(os.path.join(path))
 
-	elif 'sys-info' in command:
+	elif 'system info' in command:
 		talk('Getting System Information')
 		path = 'C:\\WINDOWS\\System32\\msinfo32.exe'
 		os.startfile(os.path.join(path))
 
-	elif 'cmd' in command:
+	elif 'command prompt' in command:
 		talk('Opening Windows Command Prompt')
 		path = 'C:\\WINDOWS\\System32\\cmd.exe'
 		os.startfile(os.path.join(path))
 
-	elif 'taskmgr' in command:
+	elif 'task manager' in command:
 		talk('Opening Windows Task Manager')
 		path = 'C:\\WINDOWS\\System32\\taskmgr.exe'
 		os.startfile(os.path.join(path))
 
-	elif 'regedit' in command:
+	elif 'registry editor' in command:
 		talk('Opening Windows Registry Editor')
 		path = 'C:\\WINDOWS\\System32\\regedt32.exe'
 		os.startfile(os.path.join(path))
 
-	elif 'sys vol' in command:
+	elif 'system volume' in command:
 		talk('Launching System Volume Mixer')
 		os.startfile('C:\\Windows\\System32\\SndVol.exe')
 
@@ -387,15 +405,15 @@ def run(e):
 		talk('Opening Windows Disk Optimizer')
 		os.startfile('C:\\Windows\\System32\\dfrgui.exe')
 
-	elif 'ctrl panel' in command:
+	elif 'control panel' in command:
 		talk('Opening Windows Control Panel')
 		os.startfile('C:\\Windows\\System32\\control.exe')
 
-	elif 'cleanmgr' in command:
+	elif 'disk cleanup' in command:
 		talk('Opening Windows Disk Cleanup Tool')
 		os.startfile('C:\\Windows\\System32\\cleanmgr.exe')
 
-	elif 'charmap' in command:
+	elif 'character map' in command:
 		talk('Opening Windows Character Map')
 		os.startfile('C:\\Windows\\System32\\charmap.exe')
 
@@ -403,9 +421,7 @@ def run(e):
 		talk('Opening Windows Diskpart utility')
 		os.startfile('C:\\Windows\\System32\\diskpart.exe')
 
-
-	# application
-
+	# user defined application
 	elif 'vlc' in command:
 		try:
 			path = 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'
@@ -508,7 +524,7 @@ except:
 	username = os.environ['USERPROFILE'][9:]
 
 engine.setProperty('voice', voice[0].id)
-talk('MARK 8 application is now online. Initializing JARVIS PC Assistant.')
+talk('MARK 9 application is now online. Initializing JARVIS PC Assistant.')
 time.sleep(1)
 
 try:
@@ -525,7 +541,7 @@ talk(f'Hello {username}. I am JARVIS! Your PC Assistant.')
 
 #Main UI
 root = Tk()
-root.title('MARK 8')
+root.title('MARK 9')
 root.geometry('260x230+600+400')
 ico = root.iconbitmap('icon.ico')
 root.resizable(0, 0)
@@ -536,17 +552,18 @@ Label(root, image=bg, bd=0).pack(pady=15)
 root.config(bg='black')
 
 #UI Widgets
-values_ = ('Time', 'Date', 'About_You', 'Version', '=', 'PC Usage',
-		   'SS','Facebook','Instagram','YouTube','Stackoverflow',
-		   'Google','CPU','Cores','Per-RAM','Avil-RAM','Used-RAM',
-		   'Total-RAM','Offline','Pomodoro','Help','Play_Song',
-		   'Pause_Song','Stop_Song','Video','ZIP File Extracter',
+values_ = ('Time', 'Date', 'About You', 'Version', '=', 'PC Usage',
+		   'Screenshot','Facebook','Instagram','YouTube','Stackoverflow',
+		   'Google','CPU','Cores','RAM Percentage','Available RAM','Used RAM',
+		   'Total RAM','Offline','Temperature in','Pomodoro','Help','Play Song',
+		   'Pause Song','Stop Song','Video','ZIP File Extracter',
 		   'Automatic File Organizer','Shutdown','Restart','Log Off',
 		   'Lock','Hibernate','Wiki','This PC','Notepad','About Windows',
-		   'Wordpad','Manage','Programs','Sys-Info','CMD','taskmgr','regedit',
-		   'Sys Vol','Services','Restore','MRT','Defrag','Ctrl Panel',
-		   'cleanmgr','CharMap','diskpart','VLC','AIMP','ZOOM','Sublime Text',
-		   'PyScripter','VS Code','Smart Defrag','Word','PowerPoint','Excel')
+		   'Wordpad','Management','Programs','System Info','Command Prompt',
+		   'Task Manager','Registry Editor','System Volume','Services',
+		   'Restore','MRT','Defrag','Control Panel','Disk Cleanup',
+		   'Character Map','diskpart','VLC','AIMP','ZOOM','Sublime Text',
+		   'PyScripter','VS Code','Word','PowerPoint','Excel')
 		   
 
 combo = ttk.Combobox(root, width=21, values=values_, state='w', font=('Calibri', 14, 'bold'), justify='center')
