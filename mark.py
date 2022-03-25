@@ -194,7 +194,7 @@ def run(e):
 	elif 'pc usage' in command:
 		upTime()
 
-	elif 'screenshot' in command:
+	elif 'ss' in command:
 		talk('Taking a Screenshot')
 		ss = pyautogui.screenshot()
 		ss.save(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
@@ -553,7 +553,7 @@ root.config(bg='black')
 
 #UI Widgets
 values_ = ('Time', 'Date', 'About You', 'Version', '=', 'PC Usage',
-		   'Screenshot','Facebook','Instagram','YouTube','Stackoverflow',
+		   'SS','Facebook','Instagram','YouTube','Stackoverflow',
 		   'Google','CPU','Cores','RAM Percentage','Available RAM','Used RAM',
 		   'Total RAM','Offline','Temperature in','Pomodoro','Help','Play Song',
 		   'Pause Song','Stop Song','Video','ZIP File Extracter',
