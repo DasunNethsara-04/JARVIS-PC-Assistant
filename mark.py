@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------------
-# Name:        MARK 9 (MRK IX)
-# Version:     9.2.0
+# Name:        MARK 10 (MRK X)
+# Version:	   10.3.5
 # Purpose:     Just for fun
 # Author:      Dasun Nethsara
-# Created:     24/03/2022
+# Created:     03/04/2022
 # Copyright:   (c) Dasun Nethsara 2022
 # Licence:     free software
 #-------------------------------------------------------------------------------
@@ -36,10 +36,6 @@ except:
 # text 2 speech
 engine = pyttsx3.init()
 voice = engine.getProperty('voices')
-try:
-	engine.setProperty('voice', voice[1].id)
-except:
-	engine.setProperty('voice', voice[0].id)
 engine.setProperty('rate', 174)
 engine.setProperty('volume', 2.0)
 
@@ -49,6 +45,16 @@ pygame.mixer.init()
 def talk(audio):
 	engine.say(audio)
 	engine.runAndWait()
+
+clicked = True
+def change(e):
+	global clicked
+	if clicked:
+		lbl.config(image=img1)
+		clicked = False
+	else:
+		lbl.config(image=img2)
+		clicked = True
 
 def take_command():
 	try:
@@ -61,10 +67,7 @@ def take_command():
 	except:
 		pass
 
-
 def upTime():
-	talk('Getting details. Just a moment sir.')
-
 	lib = ctypes.windll.kernel32
 	t = lib.GetTickCount64()
 	t = int(str(t)[:-3])
@@ -81,6 +84,7 @@ def upTime():
 		messagebox.showinfo('JARVIS - PC Usage', f'PC Usage\n\nDays:\t\t{days}\nHours:\t\t{hours}\nMinutes:\t\t{mins}')
 
 def playSong():
+	talk('Initializing Built in Music Player')
 	try:
 		talk('Please select a Music to play')
 		path = filedialog.askopenfilename(filetypes=[('MP3 Files', '*.mp3')], defaultextension=('.mp3'), title='Choose a Song to play')
@@ -88,11 +92,13 @@ def playSong():
 			talk('Process canceled by user.')
 			pass
 		else:
-			talk('Playing the song you selected! Just a moment')
+			talk('Playing the song you selected!')
 			pygame.mixer.music.load(path)
 			pygame.mixer.music.play(loops=0)
 	except:
+		talk('Initializing Faild.')
 		pass
+
 global paused
 paused = False
 def pauseSong():
@@ -115,7 +121,7 @@ stoped = False
 def stopSong():
 	try:
 		pygame.mixer.music.stop()
-		talk('Song stopped')
+		talk('Song stopped. Deactivating the music player.')
 		global stoped
 		stoped = True
 	except:
@@ -126,7 +132,6 @@ def zipFile():
 	path = filedialog.askopenfilename(filetypes=[('ZIP Files', '*.zip')], defaultextension=('.zip'), title='Choose a ZIP file to extract.')
 	if path != '':
 		with ZipFile(path, 'r') as zip:
-			#zip.printdir()
 			npath = os.environ['USERPROFILE']+'\\Documents\\Extracted Items\\'
 			zip.extractall(npath)
 			talk('Task is completed sir.')
@@ -167,7 +172,27 @@ def getTemp():
 		talk(f'The Current {search} is {temp} sir.')
 	except:
 		talk('Make sure you are connected with the Internet.')
+		pass
 
+def get_html_data(url):
+	data = requests.get(url)
+	return data
+
+def getCovidData():
+	try:
+		url = 'https://www.worldometers.info/coronavirus/'
+		html_data = get_html_data(url)
+		bs = BeautifulSoup(html_data.text, 'html.parser')
+		info_div = bs.find('div', class_='content-inner').findAll('div', id='maincounter-wrap')
+		all_data = ''
+		for blank in info_div:
+			text = blank.find('h1', class_= None).get_text()
+			count = blank.find('span', class_= None).get_text()
+			all_data = all_data + text + ' '+count + '\n'
+		return all_data
+	except:
+		talk('Make sure your are connected with the internet!')
+		pass
 
 def run(e):
 	command = take_command()
@@ -185,23 +210,31 @@ def run(e):
 		talk('Hello sir! I am JARVIS. Your PC Assistant. I am here to assist you with the varieties tasks is best I can. ')
 
 	elif 'version' in command:
-		talk('MARK 9 version 9.2.0')
-		messagebox.showinfo("MARK", "MARK 9 (MRK IX) PC Assisting Application\n\nApplication Version:\t9\nAssistant Version:\t\t9.2.0")
+		talk('MARK 10 version 10.3.5')
+		messagebox.showinfo("MARK", "MARK 10 (MRK X) PC Assisting Application\n\nApplication Version:\t10\nAssistant Version:\t\t10.3.5")
 
 	elif '=' in command:
-		talk('The answer is ' + str(round(eval(command.replace('=', '')), 3)) + ' sir.')
+		ans = round(eval(command.replace('=', '')), 3)
+		talk('The answer is ' + str(ans) + ' sir.')
+		messagebox.showinfo('Answer', 'Answer is ' + str(ans))
 
 	elif 'pc usage' in command:
 		upTime()
 
-	elif 'ss' in command:
+	elif 'screenshot' in command:
 		talk('Taking a Screenshot')
 		ss = pyautogui.screenshot()
 		ss.save(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
 		talk('This is the screenshot taken by me')
 		os.startfile(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
+		time.sleep(2)
 		talk('Here is your screenshot')
 		os.startfile(os.environ['USERPROFILE']+'\\Pictures')
+
+	elif 'global covid' in command:
+		data = getCovidData()
+		talk(data)
+		messagebox.showinfo('Details', data)
 
 	elif 'help' in command:
 		talk('Opening the help document. wait a second sir.')
@@ -255,6 +288,74 @@ def run(e):
 	elif 'temperature in' in command:
 		getTemp()
 
+	elif 'settings' in command:
+		talk('Opening Settings')
+		global ico, v
+		win = Toplevel(root)
+		win.geometry('600x200+450+420')
+		win.title('Settings')
+		win.resizable(0, 0)
+		win.iconbitmap('icon.ico')
+		s = ttk.Style()
+		s.configure('TButton', font=('Calibri', 13))
+
+		def select():
+			global data, v
+			cho = n.get()
+			if cho == 'Voice 1 - Microsoft David':
+				try:
+					engine.setProperty('voice', voice[0].id)
+					talk('You have selected Microsoft David as the Default JARVIS\' voice')
+				except:
+					Label(win, text='In some computers\' This sound might not be worked!', fg='red', font=('Calibri', 14, 'bold')).place(x=50, y=110)
+					engine.setProperty('voice', voice[0].id)
+					pass
+
+			elif cho == 'Voice 2 - Microsoft Mark':
+				try:
+					engine.setProperty('voice', voice[1].id)
+					talk('You have selected Microsoft Mark as the Default JARVIS\' voice')
+				except:
+					Label(win, text='In some computers\' This sound might not be worked!', fg='red', font=('Calibri', 14, 'bold')).place(x=50, y=110)
+					engine.setProperty('voice', voice[0].id)
+					pass
+			else:
+				try:
+					engine.setProperty('voice', voice[2].id)
+					talk('You have selected Microsoft Zira as the Default JARVIS\' voice')
+				except:
+					Label(win, text='In some computers\' This sound might not be worked!', fg='red', font=('Calibri', 14, 'bold')).place(x=50, y=110)
+					engine.setProperty('voice', voice[0].id)
+					pass
+		def close():
+			cho2 = ne.get()
+			sound = open('sound.txt', 'w')
+			sound.write(str(cho2))
+			sound.close()
+
+		ttk.Label(win, text='Settings', font=('Calibri', 26, 'underline'), foreground='red').pack(side=TOP)
+		ttk.Label(win, text='Change the JARVIS voice to: ', font=('Times', 13)).place(x=5, y=70)
+
+		n = StringVar()
+		choice = ttk.Combobox(win, width=25, textvariable=n, state='readonly')
+		choice['values'] = ('Voice 1 - Microsoft David',
+							'Voice 2 - Microsoft Mark',
+							'Voice 3 - Microsoft Zira')
+		choice.place(x=230, y=70)
+		choice.current(0)
+		ttk.Button(win, text='Preview', command=select).place(x=420, y=65)
+		ne = BooleanVar()
+		chk = ttk.Checkbutton(win, text='Enable the startup JARVIS sound', variable=ne, command=close)
+		if v == "True":
+			chk.state(['selected'])
+		else:
+			chk.state(['!selected'])
+		chk.place(x=10, y=130)
+
+		ttk.Button(win, text='Close', command=win.destroy).place(x=480, y=150)
+
+		win.mainloop()
+
 	elif 'wiki' in command:
 		info = command.replace('wiki ', '')
 		try:
@@ -290,12 +391,11 @@ def run(e):
 				talk('Playing the video you selected! Just a moment')
 				os.startfile(os.path.join(path))
 		except:
-			#talk('Process canceled by user.')
 			pass
-	
+
 	elif 'zip file extracter' in command:
 		zipFile()
-	
+
 	elif 'automatic file organizer' in command:
 		organize()
 
@@ -421,7 +521,8 @@ def run(e):
 		talk('Opening Windows Diskpart utility')
 		os.startfile('C:\\Windows\\System32\\diskpart.exe')
 
-	# user defined application
+	# application
+
 	elif 'vlc' in command:
 		try:
 			path = 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'
@@ -505,69 +606,99 @@ def run(e):
 	else:
 		talk('Sorry sir, This command is incorrect or not defined! To get a help, You need to select, "Help" from the Combo box.')
 
-hour = datetime.datetime.now().hour
+sound = open('sound.txt', 'r')
+v = sound.read()
+sound.close()
 
-if hour >= 0 and hour < 12:
-	msg = 'Good Morning, '
-elif hour >= 12 and hour < 17:
-	msg = 'Good Afternoon, '
-elif hour >= 17 and hour < 22:
-	msg = 'Good Evening, '
+if v == 'True':
+	pygame.mixer.music.load('src\\greeting.mp3')
+	pygame.mixer.music.play(loops=0)
+
 else:
-	pass
+	hour = datetime.datetime.now().hour
+
+	if hour >= 0 and hour < 12:
+		msg = 'Good Morning, '
+	elif hour >= 12 and hour < 17:
+		msg = 'Good Afternoon, '
+	elif hour >= 17 and hour < 22:
+		msg = 'Good Evening, '
+	else:
+		pass
 
 
-try:
-	name = os.environ['USERPROFILE'][9:]
-	username = name.split()[0]
-except:
-	username = os.environ['USERPROFILE'][9:]
+	try:
+		name = os.environ['USERPROFILE'][9:]
+		username = name.split()[0]
+	except:
+		username = os.environ['USERPROFILE'][9:]
 
-engine.setProperty('voice', voice[0].id)
-talk('MARK 9 application is now online. Initializing JARVIS PC Assistant.')
-time.sleep(1)
-
-try:
-	engine.setProperty('voice', voice[1].id)
-except:
 	engine.setProperty('voice', voice[0].id)
+	talk('MARK 10 is now online. Initializing JARVIS PC Assistant.')
+	time.sleep(1)
 
-try:
-	talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p'))
-except:
-	talk('its ' + datetime.datetime.now().strftime('%I:%M %p'))
+	try:
+		engine.setProperty('voice', voice[1].id)
+	except:
+		engine.setProperty('voice', voice[0].id)
 
-talk(f'Hello {username}. I am JARVIS! Your PC Assistant.')
+	try:
+		search = f"temperature in"
+		url = f'https://www.google.com/search?q={search}'
+		r = requests.get(url)
+		data = BeautifulSoup(r.text, "html.parser")
+		temp = data.find("div", class_="BNeawe").text
+	except:
+		pass
+
+	try:
+		talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p') + '. The weather in current location is ' + temp)
+	except:
+		talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p'))
+
+	talk(f'Hello {username}. I am JARVIS! Your PC Assistant.')
+
 
 #Main UI
 root = Tk()
-root.title('MARK 9')
+root.title('MARK 10')
 root.geometry('260x230+600+400')
 ico = root.iconbitmap('icon.ico')
 root.resizable(0, 0)
-bg = Image.open('bg.png')
-bg = bg.resize((160, 160))
-bg = ImageTk.PhotoImage(bg)
-Label(root, image=bg, bd=0).pack(pady=15)
 root.config(bg='black')
 
 #UI Widgets
 values_ = ('Time', 'Date', 'About You', 'Version', '=', 'PC Usage',
-		   'SS','Facebook','Instagram','YouTube','Stackoverflow',
+		   'Screenshot','Global COVID','Facebook','Instagram','YouTube','Stackoverflow',
 		   'Google','CPU','Cores','RAM Percentage','Available RAM','Used RAM',
 		   'Total RAM','Offline','Temperature in','Pomodoro','Help','Play Song',
-		   'Pause Song','Stop Song','Video','ZIP File Extracter',
-		   'Automatic File Organizer','Shutdown','Restart','Log Off',
-		   'Lock','Hibernate','Wiki','This PC','Notepad','About Windows',
+		   'Pause Song','Stop Song','Video','ZIP File Extracter', 'Settings',
+		   'Automatic File Organizer','Shutdown','Restart',
+		   'Log Off','Lock','Hibernate','Wiki','This PC','Notepad','About Windows',
 		   'Wordpad','Management','Programs','System Info','Command Prompt',
 		   'Task Manager','Registry Editor','System Volume','Services',
 		   'Restore','MRT','Defrag','Control Panel','Disk Cleanup',
 		   'Character Map','diskpart','VLC','AIMP','ZOOM','Sublime Text',
-		   'PyScripter','VS Code','Word','PowerPoint','Excel')
-		   
+		   'PyScripter','VS Code','Smart Defrag','Word','PowerPoint','Excel')
+
+
+img1 = Image.open('bg4.jpg')
+img1 = img1.resize((225, 185))
+img1 = ImageTk.PhotoImage(img1)
+
+img2 = Image.open('bg5.jpg')
+img2 = img2.resize((225, 185))
+img2 = ImageTk.PhotoImage(img2)
+
+lbl = Label(root, bd=0)
+lbl.place(x=15, y=8)
+
+change(True)
+
+root.bind('<Button-1>', change)
 
 combo = ttk.Combobox(root, width=21, values=values_, state='w', font=('Calibri', 14, 'bold'), justify='center')
-combo.pack()
+combo.place(x=15, y=190)
 combo.set('Select a Command')
 
 
