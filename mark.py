@@ -651,10 +651,10 @@ else:
 	except:
 		pass
 
-	try:
-		talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p') + '. The weather in current location is ' + temp)
-	except:
-		talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p'))
+	#try:
+	#	talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p') + '. The weather in current location is ' + temp)
+	#except:
+	#	talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p'))
 
 	talk(f'Hello {username}. I am JARVIS! Your PC Assistant.')
 
