@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------------
-# Name:        MARK 10 (MRK X)
-# Version:	   10.3.5
+# Name:        MARK 42 (MRK XLII)
+# Version:	   42.3.0.4.2
 # Purpose:     Just for fun
 # Author:      Dasun Nethsara
-# Created:     03/04/2022
+# Created:     21/04/2022
 # Copyright:   (c) Dasun Nethsara 2022
 # Licence:     free software
 #-------------------------------------------------------------------------------
@@ -12,9 +12,10 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog, ttk
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageSequence
 from bs4 import BeautifulSoup
 from zipfile import ZipFile
+import PySimpleGUI as sg
 import requests
 import datetime
 import pyttsx3
@@ -28,8 +29,43 @@ import pygame
 import time
 import shutil
 
+
+class AnimateGif(object):
+    def __init__(self, image):
+        self._frames = []
+        img = Image.open(image)
+        for frame in ImageSequence.Iterator(img):
+            photo = ImageTk.PhotoImage(frame)
+            photo.delay = frame.info['duration'] * 10
+            self._frames.append(photo)
+
+    def __len__(self):
+        return len(self._frames)
+    
+    def __getitem__(self, frame_num):
+        return self._frames[frame_num]
+    
+def update_label_image(label, ani_img, ms_delay, frame_num):
+    global cancel_id
+    label.configure(image=ani_img[frame_num])
+    frame_num = (frame_num + 1) % len(ani_img)
+    cancel_id = root.after(ms_delay, update_label_image, label, ani_img, ms_delay, frame_num)
+    
+def enable_animation():
+    global cancel_id
+    if cancel_id is None:
+        ms_delay = 5000 // len(ani_img)
+        cancel_id = root.after(ms_delay, update_label_image, animation, ani_img, ms_delay, 0)
+
+def cancel_animation():
+    global cancel_id
+    if cancel_id is not None:
+        root.after_cancel(cancel_id)
+        cancel_id = None
+
+
 try:
-	os.mkdir(os.environ['USERPROFILE']+"\\Documents\\Extracted Items")
+	os.mkdir(os.environ['USERPROFILE'] + "\\Documents\\Extracted Items")
 except:
 	pass
 
@@ -45,16 +81,6 @@ pygame.mixer.init()
 def talk(audio):
 	engine.say(audio)
 	engine.runAndWait()
-
-clicked = True
-def change(e):
-	global clicked
-	if clicked:
-		lbl.config(image=img1)
-		clicked = False
-	else:
-		lbl.config(image=img2)
-		clicked = True
 
 def take_command():
 	try:
@@ -134,7 +160,8 @@ def zipFile():
 		with ZipFile(path, 'r') as zip:
 			npath = os.environ['USERPROFILE']+'\\Documents\\Extracted Items\\'
 			zip.extractall(npath)
-			talk('Task is completed sir.')
+			sg.popup_notify("ZIP FIle Extracting Completed!", title='Done', icon='icon.png')
+			talk('Task is completed.')
 			os.startfile(npath)
 			talk('These are the files extracted by me.')
 	else:
@@ -155,13 +182,14 @@ def organize():
 			else:
 				os.makedirs(path+"/"+extension)
 				shutil.move(path+"/"+file,path+"/"+extension)
-		talk('Automatic File Organizing completed sir.')
+		sg.popup_notify("Automatic File Organizing completed!", title='Done', icon='icon.png')
+		talk('Automatic File Organizing completed.')
 	else:
 		talk('Process canceled by user.')
 		pass
 
 def getTemp():
-	talk('Just a moment sir.')
+	talk('Just a moment.')
 	try:
 		location = take_command().replace('temperature in', '')
 		search = f"temperature in {location}"
@@ -169,7 +197,7 @@ def getTemp():
 		r = requests.get(url)
 		data = BeautifulSoup(r.text, "html.parser")
 		temp = data.find("div", class_="BNeawe").text
-		talk(f'The Current {search} is {temp} sir.')
+		talk(f'The Current {search} is {temp}.')
 	except:
 		talk('Make sure you are connected with the Internet.')
 		pass
@@ -194,12 +222,25 @@ def getCovidData():
 		talk('Make sure your are connected with the internet!')
 		pass
 
+def search():
+	command = take_command().replace('search', '')
+	talk('Searching for ' + command)
+	try:
+		pyautogui.press('Win')
+
+		for y in command:
+			pyautogui.press(y)
+		pyautogui.press('Enter')
+	except:
+		talk('Error searching '+ command)
+		pass
+
 def run(e):
 	command = take_command()
 
 	if 'time' in command:
 		try:
-			talk('The current time is ' + datetime.datetime.now().strftime('%I:%M %p') + ' sir.')
+			talk('The current time is ' + datetime.datetime.now().strftime('%I:%M %p') + '.')
 		except:
 			talk('Sorry sir, I have found an error in the datetime module, So I Cloudn\'t get the current time.')
 
@@ -207,16 +248,17 @@ def run(e):
 		talk('Today is ' + str(datetime.date.today()) + ' sir.')
 
 	elif 'about you' in command:
-		talk('Hello sir! I am JARVIS. Your PC Assistant. I am here to assist you with the varieties tasks is best I can. ')
+		talk('Hello sir! I am JARVIS. Your PC Assistant. JARVIS stands for, Just A Rather Very Intelligent System. I am here to assist you with the varieties tasks is best I can. ')
 
 	elif 'version' in command:
-		talk('MARK 10 version 10.3.5')
-		messagebox.showinfo("MARK", "MARK 10 (MRK X) PC Assisting Application\n\nApplication Version:\t10\nAssistant Version:\t\t10.3.5")
+		talk('MARK 42 version 42.3.0.4.2')
+		messagebox.showinfo("MARK", "MARK 42 (MRK XLII) PC Assisting Application\n\nApplication Version:\t\t42\nAssistant Version:\t\t42.3.0.4.2")
 
 	elif '=' in command:
 		ans = round(eval(command.replace('=', '')), 3)
 		talk('The answer is ' + str(ans) + ' sir.')
-		messagebox.showinfo('Answer', 'Answer is ' + str(ans))
+		#messagebox.showinfo('Answer', 'Answer is ' + str(ans))
+		sg.popup_notify(f'Answer is {ans}', title='Answer', icon='icon.png')
 
 	elif 'pc usage' in command:
 		upTime()
@@ -228,7 +270,7 @@ def run(e):
 		talk('This is the screenshot taken by me')
 		os.startfile(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
 		time.sleep(2)
-		talk('Here is your screenshot')
+		talk('Here is your screenshot. I renamed the screenshot as, JARVIS - Screenshot.png')
 		os.startfile(os.environ['USERPROFILE']+'\\Pictures')
 
 	elif 'global covid' in command:
@@ -237,8 +279,11 @@ def run(e):
 		messagebox.showinfo('Details', data)
 
 	elif 'help' in command:
-		talk('Opening the help document. wait a second sir.')
+		talk('Opening the help document. wait a second.')
 		os.startfile('src\\help.pdf')
+	
+	elif 'search' in command:
+		search()
 
 	elif 'facebook' in command:
 		talk('Opening Facebook from your web browser. Just a moment')
@@ -261,13 +306,13 @@ def run(e):
 		webbrowser.open('www.google.com')
 
 	elif 'cpu' in command:
-		talk('CPU is at ' + str(psutil.cpu_percent()) + '% sir.')
+		talk('CPU is at ' + str(psutil.cpu_percent()) + '%.')
 
 	elif 'ram percentage' in command:
-		talk('System Memory is at ' + str(psutil.virtual_memory().percent) + '% sir.')
+		talk('System Memory is at ' + str(psutil.virtual_memory().percent) + '%.')
 
 	elif 'cores' in command:
-		talk('Sir, There are ' + str(psutil.cpu_count()) + 'logical CPUs in your Computer')
+		talk('There are ' + str(psutil.cpu_count()) + ' logical CPUs in your Computer')
 
 	elif 'available ram' in command:
 		ram = round((psutil.virtual_memory().available) / (1024 ** 3), 2)
@@ -283,6 +328,7 @@ def run(e):
 
 	elif 'offline' in command:
 		talk('Thank You for working with me. See you again sir!')
+		sg.popup_notify('Have a nice day sir!', title='Good Bye', icon='icon.png')
 		root.destroy()
 
 	elif 'temperature in' in command:
@@ -322,7 +368,7 @@ def run(e):
 			else:
 				try:
 					engine.setProperty('voice', voice[2].id)
-					talk('You have selected Microsoft Zira as the Default JARVIS\' voice')
+					talk('You have selected Microsoft Zira as the Default JARVIS\'s voice')
 				except:
 					Label(win, text='In some computers\' This sound might not be worked!', fg='red', font=('Calibri', 14, 'bold')).place(x=50, y=110)
 					engine.setProperty('voice', voice[0].id)
@@ -361,10 +407,10 @@ def run(e):
 		try:
 			talk('Searching for ' + info)
 			res = wikipedia.summary(info, 2)
-			talk('Search found. Let me speak it sir')
+			talk('Search found. Let me deliver it for you.')
 			talk(res)
 		except:
-			talk('Make sure you\'re connected with the Internet or Try a different word')
+			talk('Make sure you\'re connected with the Internet or Try another word')
 			pass
 
 	elif 'pomodoro' in command:
@@ -415,7 +461,7 @@ def run(e):
 		os.system('shutdown.exe -l')
 
 	elif 'lock' in command:
-		talk('Locking your PC. Just a moment sir.')
+		talk('Locking your PC. Just a moment.')
 		os.system('rundll32.exe user32.dll, LockWorkStation')
 
 	elif 'hibernate' in command:
@@ -425,7 +471,7 @@ def run(e):
 			os.system('rundll32.exe powrprof.dll, SetSuspendState')
 		except:
 			talk('Sorry Sir, your PC has no hibernation ability. To hibernate your PC, You need to activate it.')
-			talk('This video will help you sir.')
+			talk('This video will help you.')
 			webbrowser.open('https://youtu.beYU681US3NS8')
 
 	elif 'this pc' in command:
@@ -483,13 +529,13 @@ def run(e):
 		os.startfile('C:\\Windows\\System32\\SndVol.exe')
 
 	elif 'services' in command:
-		talk('Opening Windows Services. Just a moment sir.')
+		talk('Opening Windows Services. Just a moment.')
 		os.startfile('C:\\Windows\\System32\\services.msc')
 
 	elif 'restore' in command:
 		try:
 			os.startfile('C:\\Windows\\System32\\rstrui.exe')
-			talk('Opening Windows System Restore Utility. Just a moment sir.')
+			talk('Opening Windows System Restore Utility. Just a moment.')
 		except:
 			talk('Unknown error found on opening Windows System Restore Utility.')
 			pass
@@ -529,7 +575,7 @@ def run(e):
 			talk('Opening VLC Media Player')
 			os.startfile(os.path.join(path))
 		except:
-			talk('Sorry sir, you have not installed VLC Media Player on your PC')
+			talk('Sorry sir, you have not installed VLC Media Player on your computer.')
 			pass
 
 	elif 'aimp' in command:
@@ -537,7 +583,7 @@ def run(e):
 			talk('Opening AIMP Music Player')
 			os.startfile('C:\\Program Files (x86)\\AIMP\\AIMP.exe')
 		except:
-			talk('Sorry sir, you have not installed AIMP Music Player on your PC')
+			talk('Sorry sir, you have not installed AIMP Music Player on your computer.')
 			pass
 
 	elif 'zoom' in command:
@@ -546,7 +592,7 @@ def run(e):
 			talk('Opening Zoom Cloud Meeting Service')
 			os.startfile(os.path.join(os.environ['USERPROFILE']+path))
 		except:
-			talk('Sorry sir, you have not installed Zoom Cloud Meeting Service on your PC')
+			talk('Sorry sir, you have not installed Zoom Cloud Meeting Service on your computer')
 			pass
 
 	elif 'sublime text' in command:
@@ -555,7 +601,7 @@ def run(e):
 			talk('Opening Sublime Text')
 			os.startfile(os.path.join(path))
 		except:
-			talk('Sorry sir, you have not installed Sublime Text on your PC')
+			talk('Sorry sir, you have not installed Sublime Text on your computer')
 			pass
 
 	elif 'pyscripter' in command:
@@ -564,7 +610,7 @@ def run(e):
 			talk('Opening PyScripter IDE')
 			os.startfile(os.path.join(path))
 		except:
-			talk('Sorry sir, you have not installed PyScripter IDE on your PC')
+			talk('Sorry sir, you have not installed PyScripter IDE on your computer')
 			pass
 
 	elif 'vs code' in command:
@@ -573,38 +619,26 @@ def run(e):
 			talk('Opening Visual Studio Code')
 			os.startfile(os.path.join(os.environ['USERPROFILE'] + path))
 		except:
-			talk('Sorry sir, you have not installed Visual Studio Code on your PC')
+			talk('Sorry sir, you have not installed Visual Studio Code on your computer')
 			pass
 
 	elif 'word' in command:
-		try:
-			path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\Word 2013.lnk'
-			talk('OPening Microsoft Office Word')
-			os.startfile(os.path.join(path))
-		except:
-			talk('Sorry sir, you have not installed Microsoft Office 2013 on your PC')
-			pass
+		search()
 
 	elif 'powerpoint' in command:
-		try:
-			path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\PowerPoint 2013.lnk'
-			talk('OPening Microsoft Office PowerPoint')
-			os.startfile(os.path.join(path))
-		except:
-			talk('Sorry sir, you have not installed Microsoft Office 2013 on your PC')
-			pass
-
+		search()
+			
 	elif 'excel' in command:
-		try:
-			talk('OPening Microsoft Office Excel')
-			path = 'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Office 2013\\Excel 2013.lnk'
-			os.startfile(os.path.join(path))
-		except:
-			talk('Sorry sir, you have not installed Microsoft Office 2013 on your PC')
-			pass
+		search()
+	
+	elif 'access' in command:
+		search()
 
 	else:
-		talk('Sorry sir, This command is incorrect or not defined! To get a help, You need to select, "Help" from the Combo box.')
+		try:
+			search()
+		except:
+			talk('Sorry sir, This command is incorrect or not defined! To get a help, You need to select, "Help", from the Combo box.')
 
 sound = open('sound.txt', 'r')
 v = sound.read()
@@ -625,7 +659,7 @@ else:
 		msg = 'Good Evening, '
 	else:
 		pass
-
+	
 
 	try:
 		name = os.environ['USERPROFILE'][9:]
@@ -634,17 +668,19 @@ else:
 		username = os.environ['USERPROFILE'][9:]
 
 	engine.setProperty('voice', voice[0].id)
-	talk('MARK 10 is now online. Initializing JARVIS PC Assistant.')
+	talk('MARK 42 is now online. Initializing JARVIS PC Assistant.')
+	talk('Activating all the protocols.')
+	talk('Keyboard Automation Activated.')
 	time.sleep(1)
 
 	try:
-		engine.setProperty('voice', voice[1].id)
+		engine.setProperty('voice', voice[3].id)
 	except:
 		engine.setProperty('voice', voice[0].id)
 
 	try:
-		search = f"temperature in"
-		url = f'https://www.google.com/search?q={search}'
+		search2 = f"temperature in"
+		url = f'https://www.google.com/search?q={search2}'
 		r = requests.get(url)
 		data = BeautifulSoup(r.text, "html.parser")
 		temp = data.find("div", class_="BNeawe").text
@@ -656,20 +692,28 @@ else:
 	except:
 		talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p'))
 
-	talk(f'Hello {username}. I am JARVIS! Your PC Assistant.')
-
+	talk(f'Hello {username}! I am JARVIS! Your PC Assistant.')
 
 #Main UI
 root = Tk()
-root.title('MARK 10')
+root.title('MARK 42')
 root.geometry('260x230+600+400')
 ico = root.iconbitmap('icon.ico')
 root.resizable(0, 0)
 root.config(bg='black')
 
+ani_img = AnimateGif("anim.gif")
+cancel_id = None
+animation = Label(image=ani_img[0], bd=0)
+#animation.place(x=-110, y=-80)
+animation.pack()
+
+enable_animation()
+
 #UI Widgets
-values_ = ('Time', 'Date', 'About You', 'Version', '=', 'PC Usage',
-		   'Screenshot','Global COVID','Facebook','Instagram','YouTube','Stackoverflow',
+values_ = (
+			'Time', 'Date', 'About You', 'Version', '=', 'PC Usage',
+		   'Screenshot','Global COVID', 'Search ','Facebook','Instagram','YouTube','Stackoverflow',
 		   'Google','CPU','Cores','RAM Percentage','Available RAM','Used RAM',
 		   'Total RAM','Offline','Temperature in','Pomodoro','Help','Play Song',
 		   'Pause Song','Stop Song','Video','ZIP File Extracter', 'Settings',
@@ -678,24 +722,10 @@ values_ = ('Time', 'Date', 'About You', 'Version', '=', 'PC Usage',
 		   'Wordpad','Management','Programs','System Info','Command Prompt',
 		   'Task Manager','Registry Editor','System Volume','Services',
 		   'Restore','MRT','Defrag','Control Panel','Disk Cleanup',
-		   'Character Map','diskpart','VLC','AIMP','ZOOM','Sublime Text',
-		   'PyScripter','VS Code','Smart Defrag','Word','PowerPoint','Excel')
+		   'Character Map','diskpart','VLC Meida Player','AIMP Music Player','ZOOM',
+		   'Sublime Text','PyScripter','VS Code','Word','PowerPoint','Excel', 'Access',
+		   )
 
-
-img1 = Image.open('bg4.jpg')
-img1 = img1.resize((225, 185))
-img1 = ImageTk.PhotoImage(img1)
-
-img2 = Image.open('bg5.jpg')
-img2 = img2.resize((225, 185))
-img2 = ImageTk.PhotoImage(img2)
-
-lbl = Label(root, bd=0)
-lbl.place(x=15, y=8)
-
-change(True)
-
-root.bind('<Button-1>', change)
 
 combo = ttk.Combobox(root, width=21, values=values_, state='w', font=('Calibri', 14, 'bold'), justify='center')
 combo.place(x=15, y=190)
