@@ -1,12 +1,63 @@
 #-------------------------------------------------------------------------------
-# Name:        MARK 42 (MRK XLII)
-# Version:	   42.3.0.4.2
+# Name:        MARK 50 (MRK L)
+# Version:	   50.5.21.1
 # Purpose:     Just for fun
 # Author:      Dasun Nethsara
-# Created:     21/04/2022
+# Created:     24/05/2022
 # Copyright:   (c) Dasun Nethsara 2022
 # Licence:     free software
 #-------------------------------------------------------------------------------
+
+
+'''
+--------------------+++++++++++++++++++++ MARK 50 +++++++++++++++++++++--------------------
+-------------------=================== DOCUMENTATIONS ===================------------------
+
+Welcome to the MARK 50 Source Code. MARK 50 is the next level free assisting software to make your computer easier to use.
+JARVIS is the assisting program inside of the MARK application. We have upgraded the features, performance and the experience.
+
+With,
+✓ New Interface
+✓ New Features
+✓ More Powerful
+✓ More Helpful
+✓ More Options
+✓ Easier to use
+✓ With new bug fixes
+✓ No more typing. Only selecting!
+
+MARK 50 v50.5.21.1 is an open source community application. It works all the new Windows version Like Windows 8.1, 10 and Windows 11.
+
+-------- System Requirements (Recommended) --------
+OS - Windows 8.1 or upper
+CPU - 1GHz Pentium IV Processor
+RAM - 265MB or upper
+VGA - 64MB with WDDM 1.0 Graphics Drivers
+
+-------- New Features --------
+✓ Built-In Music Player
+✓ Automatic File Organizer
+✓ ZIP File Extractor
+✓ Familiar commands
+✓ COVID 19 Tracker
+✓ New GUI Effects
+✓ PC Information
+
+
+If you faced to any trouble, you can contact the programmer of the MARK 50.
+
+Email - techsaralk.pro@gmail.com
+GitHub - https://github.com/DasunNethsara-04/
+Stackoverflow - https://stackoverflow.com/users/18193670/dasun-nethsara
+Telegram - https://t.me/techsara_lk
+
+
+
+
+Dasun Nethsara
+2022.05.24
+All Rights Reserved.
+'''
 
 # Imports
 from tkinter import *
@@ -28,41 +79,7 @@ import wikipedia
 import pygame
 import time
 import shutil
-
-
-class AnimateGif(object):
-    def __init__(self, image):
-        self._frames = []
-        img = Image.open(image)
-        for frame in ImageSequence.Iterator(img):
-            photo = ImageTk.PhotoImage(frame)
-            photo.delay = frame.info['duration'] * 10
-            self._frames.append(photo)
-
-    def __len__(self):
-        return len(self._frames)
-    
-    def __getitem__(self, frame_num):
-        return self._frames[frame_num]
-    
-def update_label_image(label, ani_img, ms_delay, frame_num):
-    global cancel_id
-    label.configure(image=ani_img[frame_num])
-    frame_num = (frame_num + 1) % len(ani_img)
-    cancel_id = root.after(ms_delay, update_label_image, label, ani_img, ms_delay, frame_num)
-    
-def enable_animation():
-    global cancel_id
-    if cancel_id is None:
-        ms_delay = 5000 // len(ani_img)
-        cancel_id = root.after(ms_delay, update_label_image, animation, ani_img, ms_delay, 0)
-
-def cancel_animation():
-    global cancel_id
-    if cancel_id is not None:
-        root.after_cancel(cancel_id)
-        cancel_id = None
-
+import boot_screen
 
 try:
 	os.mkdir(os.environ['USERPROFILE'] + "\\Documents\\Extracted Items")
@@ -203,8 +220,11 @@ def getTemp():
 		pass
 
 def get_html_data(url):
-	data = requests.get(url)
-	return data
+	try:
+		data = requests.get(url)
+		return data
+	except:
+		pass
 
 def getCovidData():
 	try:
@@ -227,7 +247,6 @@ def search():
 	talk('Searching for ' + command)
 	try:
 		pyautogui.press('Win')
-
 		for y in command:
 			pyautogui.press(y)
 		pyautogui.press('Enter')
@@ -235,43 +254,58 @@ def search():
 		talk('Error searching '+ command)
 		pass
 
+def take_screenshot():
+	root.iconify()
+	talk('Taking a Screenshot')
+	ss = pyautogui.screenshot()
+	ss.save(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
+	talk('This is the screenshot taken by me')
+	os.startfile(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
+	time.sleep(2)
+	talk('Here is your screenshot. I renamed the screenshot as, JARVIS - Screenshot.png')
+	os.startfile(os.environ['USERPROFILE']+'\\Pictures')
+
+'''			Main Function			'''
+
 def run(e):
+	# username spilling
+	name = psutil.users()[0][0]
+	try:
+		sname = name.split()[1]
+	except:
+		sname = name.split()[0]
 	command = take_command()
 
 	if 'time' in command:
 		try:
 			talk('The current time is ' + datetime.datetime.now().strftime('%I:%M %p') + '.')
 		except:
-			talk('Sorry sir, I have found an error in the datetime module, So I Cloudn\'t get the current time.')
+			talk(f'Sorry Mr.{sname}, I have found an error in the datetime module, So I Couldn\'t get the current time.')
 
 	elif 'date' in command:
 		talk('Today is ' + str(datetime.date.today()) + ' sir.')
 
 	elif 'about you' in command:
-		talk('Hello sir! I am JARVIS. Your PC Assistant. JARVIS stands for, Just A Rather Very Intelligent System. I am here to assist you with the varieties tasks is best I can. ')
+		talk('Hello sir! I am JARVIS. Your PC Assistant. JARVIS stands for, Just A Rather Very Intelligent System. I am here to assist you with the varieties tasks is best I can.')
 
 	elif 'version' in command:
-		talk('MARK 42 version 42.3.0.4.2')
-		messagebox.showinfo("MARK", "MARK 42 (MRK XLII) PC Assisting Application\n\nApplication Version:\t\t42\nAssistant Version:\t\t42.3.0.4.2")
+		talk('MARK 50 version 50.5.21.1')
+		messagebox.showinfo("MARK", "MARK 50 (MRK L) PC Assisting Application\n\nApplication Version:\t\t50\nAssistant Version:\t\t50.5.21.1")
 
 	elif '=' in command:
 		ans = round(eval(command.replace('=', '')), 3)
 		talk('The answer is ' + str(ans) + ' sir.')
-		#messagebox.showinfo('Answer', 'Answer is ' + str(ans))
 		sg.popup_notify(f'Answer is {ans}', title='Answer', icon='icon.png')
 
 	elif 'pc usage' in command:
 		upTime()
 
 	elif 'screenshot' in command:
-		talk('Taking a Screenshot')
-		ss = pyautogui.screenshot()
-		ss.save(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
-		talk('This is the screenshot taken by me')
-		os.startfile(os.environ['USERPROFILE']+'\\Pictures\\JARVIS - Screenshot.png')
-		time.sleep(2)
-		talk('Here is your screenshot. I renamed the screenshot as, JARVIS - Screenshot.png')
-		os.startfile(os.environ['USERPROFILE']+'\\Pictures')
+		take_screenshot()
+
+	elif 'pc info' in command:
+		talk('Launching PC Info')
+		import pc_info
 
 	elif 'global covid' in command:
 		data = getCovidData()
@@ -333,6 +367,18 @@ def run(e):
 
 	elif 'temperature in' in command:
 		getTemp()
+	
+	elif 'create python file' in command:
+		try:
+			talk('Creating Python File')
+			path = os.environ['USERPROFILE']+'\\Desktop'
+			f = open(f'{path}\\Python File.py', 'w')
+			f.write('# Made by MARK 50\n\n')
+			f.close()
+			sg.popup_notify(f'File Created\nin {path}\\Python File.py', title='Done', icon='icon.png')
+		except:
+			talk('Error creating Python File')
+			pass		
 
 	elif 'settings' in command:
 		talk('Opening Settings')
@@ -418,6 +464,7 @@ def run(e):
 		os.startfile('src\\pomodoro.exe')
 
 	elif 'play song' in command:
+		talk('The songs has been playing started. If you want to pause it, you can cant do it just selecting, Pause Song ')
 		playSong()
 
 	elif 'pause song' in command:
@@ -633,6 +680,10 @@ def run(e):
 	
 	elif 'access' in command:
 		search()
+	
+	#elif 'uninstall mark 50' in command:
+	#	talk('Getting Ready to uninstall MARK 50')
+	#	import uninstall
 
 	else:
 		try:
@@ -640,14 +691,48 @@ def run(e):
 		except:
 			talk('Sorry sir, This command is incorrect or not defined! To get a help, You need to select, "Help", from the Combo box.')
 
-sound = open('sound.txt', 'r')
-v = sound.read()
-sound.close()
+'''	-----------------------------------------------	'''
 
-if v == 'True':
-	pygame.mixer.music.load('src\\greeting.mp3')
-	pygame.mixer.music.play(loops=0)
+'''			Background Animating			'''
 
+class AnimateGif(object):
+    def __init__(self, image):
+        self._frames = []
+        img = Image.open(image)
+        for frame in ImageSequence.Iterator(img):
+            photo = ImageTk.PhotoImage(frame)
+            photo.delay = frame.info['duration'] * 10
+            self._frames.append(photo)
+
+    def __len__(self):
+        return len(self._frames)
+    
+    def __getitem__(self, frame_num):
+        return self._frames[frame_num]
+    
+def update_label_image(label, ani_img, ms_delay, frame_num):
+    global cancel_id
+    label.configure(image=ani_img[frame_num])
+    frame_num = (frame_num + 1) % len(ani_img)
+    cancel_id = root.after(ms_delay, update_label_image, label, ani_img, ms_delay, frame_num)
+    
+def enable_animation():
+    global cancel_id
+    if cancel_id is None:
+        ms_delay = 5000 // len(ani_img)
+        cancel_id = root.after(ms_delay, update_label_image, animation, ani_img, ms_delay, 0)
+
+def cancel_animation():
+    global cancel_id
+    if cancel_id is not None:
+        root.after_cancel(cancel_id)
+        cancel_id = None
+
+'''------------------------------------------'''
+
+pygame.mixer.music.load('src\\greeting.mp3')
+pygame.mixer.music.play(loops=0)
+'''
 else:
 	hour = datetime.datetime.now().hour
 
@@ -660,21 +745,20 @@ else:
 	else:
 		pass
 	
-
 	try:
 		name = os.environ['USERPROFILE'][9:]
-		username = name.split()[0]
+		username = name.split()[1]
 	except:
 		username = os.environ['USERPROFILE'][9:]
 
 	engine.setProperty('voice', voice[0].id)
-	talk('MARK 42 is now online. Initializing JARVIS PC Assistant.')
+	talk('MARK 50 is now online. Initializing JARVIS PC Assistant.')
 	talk('Activating all the protocols.')
 	talk('Keyboard Automation Activated.')
 	time.sleep(1)
 
 	try:
-		engine.setProperty('voice', voice[3].id)
+		engine.setProperty('voice', voice[0].id)
 	except:
 		engine.setProperty('voice', voice[0].id)
 
@@ -692,11 +776,13 @@ else:
 	except:
 		talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p'))
 
-	talk(f'Hello {username}! I am JARVIS! Your PC Assistant.')
+	talk(f'Hello Mister {username}! I\'m JARVIS! Your PC Assistant.')
+'''
 
 #Main UI
+
 root = Tk()
-root.title('MARK 42')
+root.title('MARK 50')
 root.geometry('260x230+600+400')
 ico = root.iconbitmap('icon.ico')
 root.resizable(0, 0)
@@ -707,23 +793,22 @@ cancel_id = None
 animation = Label(image=ani_img[0], bd=0)
 #animation.place(x=-110, y=-80)
 animation.pack()
-
 enable_animation()
 
 #UI Widgets
 values_ = (
-			'Time', 'Date', 'About You', 'Version', '=', 'PC Usage',
-		   'Screenshot','Global COVID', 'Search ','Facebook','Instagram','YouTube','Stackoverflow',
-		   'Google','CPU','Cores','RAM Percentage','Available RAM','Used RAM',
-		   'Total RAM','Offline','Temperature in','Pomodoro','Help','Play Song',
-		   'Pause Song','Stop Song','Video','ZIP File Extracter', 'Settings',
-		   'Automatic File Organizer','Shutdown','Restart',
-		   'Log Off','Lock','Hibernate','Wiki','This PC','Notepad','About Windows',
-		   'Wordpad','Management','Programs','System Info','Command Prompt',
-		   'Task Manager','Registry Editor','System Volume','Services',
-		   'Restore','MRT','Defrag','Control Panel','Disk Cleanup',
-		   'Character Map','diskpart','VLC Meida Player','AIMP Music Player','ZOOM',
-		   'Sublime Text','PyScripter','VS Code','Word','PowerPoint','Excel', 'Access',
+			'Time', 'Date', 'About You', 'Version', '= ', 'PC Usage','Create Python File', 
+			'Screenshot','PC Info','Global COVID','Search ',
+		   	'Facebook','Instagram','YouTube','Stackoverflow','Google','CPU','Cores',
+		   	'RAM Percentage','Available RAM','Used RAM','Total RAM','Offline',
+		   	'Temperature in','Pomodoro','Help','Play Song','Pause Song','Stop Song',
+		   	'Video','ZIP File Extracter','Settings','Automatic File Organizer',
+		   	'Shutdown','Restart','Log Off','Lock','Hibernate','Wiki ','This PC',
+		   	'Notepad','About Windows','Wordpad','Management','Programs','System Info',
+		   	'Command Prompt','Task Manager','Registry Editor','System Volume','Services',
+		   	'Restore','MRT','Defrag','Control Panel','Disk Cleanup','Character Map',
+		   	'diskpart','VLC Meida Player','AIMP Music Player','ZOOM','Sublime Text',
+		   	'PyScripter','VS Code','Word','PowerPoint','Excel', 'Access',
 		   )
 
 
