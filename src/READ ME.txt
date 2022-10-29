@@ -6,7 +6,7 @@ Windows Registry File.
 The steps you need to follow:
 
 1. Close the MARK 42 (MRK XLII) Application
-2. Go to 'C:\Program Files (x86)\MARK 42' (Directory of the application)
+2. Go to 'C:\Program Files (x86)\MARK 68' (Directory of the application)
 3. Open the 'src' folder
 4. Double-click on the file named 'JARVIS_Voice.reg'
 5. It's ready to go. Now you can run the application normally...
