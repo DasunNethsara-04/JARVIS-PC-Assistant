@@ -1,63 +1,17 @@
 #-------------------------------------------------------------------------------
-# Name:        MARK 50 (MRK L)
-# Version:	   50.5.21.1
-# Purpose:     Just for fun
-# Author:      Dasun Nethsara
-# Created:     24/05/2022
-# Copyright:   (c) Dasun Nethsara 2022
-# Licence:     free software
+# Name:         MARK 68 (MRK LXVIII)
+# Version:	    12.7.4
+# Purpose:      Just for fun
+# Author:       Dasun Nethsara
+# Created:      18/06/2021
+# Updated:	    29/10/2022
+# Copyright:    (c) Dasun Nethsara 2022
+# Licence:      free software with MIT licence
+# Platform:	   	Windows
+# EXE Package: 	Auto-Py-To-Exe (Python Package), Inno Setup
+# Environment:	Sublime Text
+# Resourses:    -
 #-------------------------------------------------------------------------------
-
-
-'''
---------------------+++++++++++++++++++++ MARK 50 +++++++++++++++++++++--------------------
--------------------=================== DOCUMENTATIONS ===================------------------
-
-Welcome to the MARK 50 Source Code. MARK 50 is the next level free assisting software to make your computer easier to use.
-JARVIS is the assisting program inside of the MARK application. We have upgraded the features, performance and the experience.
-
-With,
-✓ New Interface
-✓ New Features
-✓ More Powerful
-✓ More Helpful
-✓ More Options
-✓ Easier to use
-✓ With new bug fixes
-✓ No more typing. Only selecting!
-
-MARK 50 v50.5.21.1 is an open source community application. It works all the new Windows version Like Windows 8.1, 10 and Windows 11.
-
--------- System Requirements (Recommended) --------
-OS - Windows 8.1 or upper
-CPU - 1GHz Pentium IV Processor
-RAM - 265MB or upper
-VGA - 64MB with WDDM 1.0 Graphics Drivers
-
--------- New Features --------
-✓ Built-In Music Player
-✓ Automatic File Organizer
-✓ ZIP File Extractor
-✓ Familiar commands
-✓ COVID 19 Tracker
-✓ New GUI Effects
-✓ PC Information
-
-
-If you faced to any trouble, you can contact the programmer of the MARK 50.
-
-Email - techsaralk.pro@gmail.com
-GitHub - https://github.com/DasunNethsara-04/
-Stackoverflow - https://stackoverflow.com/users/18193670/dasun-nethsara
-Telegram - https://t.me/techsara_lk
-
-
-
-
-Dasun Nethsara
-2022.05.24
-All Rights Reserved.
-'''
 
 # Imports
 from tkinter import *
@@ -79,7 +33,7 @@ import wikipedia
 import pygame
 import time
 import shutil
-import boot_screen
+import splash
 
 try:
 	os.mkdir(os.environ['USERPROFILE'] + "\\Documents\\Extracted Items")
@@ -253,6 +207,36 @@ def search():
 	except:
 		talk('Error searching '+ command)
 		pass
+state = True
+def clock():
+	global state
+	def getTime():
+		time = datetime.datetime.now().strftime('%I:%M:%S %p')
+		label.configure(text=time)
+		label.after(1000, getTime)
+	
+	def btn_click():
+		import random
+		colors = ['red', 'cyan', '#ffff00', 'white', 'sky blue', '#808080']
+		global state
+		if state == True:
+			label.configure(fg=random.choice(colors))
+			state = False
+		else:
+			label.configure(fg=random.choice(colors))
+			state = True
+
+	messagebox.showinfo('Alert', 'Please click the \'Change Colour\' button more times to change the color of the clock')
+	clock_win = Tk()
+	clock_win.title("Digital Clock")
+	clock_win.iconbitmap('icon.ico')
+	clock_win.configure(bg='black')
+	clock_win.resizable(0, 0)
+	label = Label(clock_win, fg='cyan', bg='black', font=('ds-digital', 100))
+	label.pack()
+	Button(clock_win, text='Change Colour', fg='#ffff00', bg='black', command=btn_click, bd=0).pack()
+	getTime()
+	clock_win.mainloop()
 
 def take_screenshot():
 	root.iconify()
@@ -265,15 +249,10 @@ def take_screenshot():
 	talk('Here is your screenshot. I renamed the screenshot as, JARVIS - Screenshot.png')
 	os.startfile(os.environ['USERPROFILE']+'\\Pictures')
 
+
 '''			Main Function			'''
 
 def run(e):
-	# username spilling
-	name = psutil.users()[0][0]
-	try:
-		sname = name.split()[1]
-	except:
-		sname = name.split()[0]
 	command = take_command()
 
 	if 'time' in command:
@@ -289,8 +268,8 @@ def run(e):
 		talk('Hello sir! I am JARVIS. Your PC Assistant. JARVIS stands for, Just A Rather Very Intelligent System. I am here to assist you with the varieties tasks is best I can.')
 
 	elif 'version' in command:
-		talk('MARK 50 version 50.5.21.1')
-		messagebox.showinfo("MARK", "MARK 50 (MRK L) PC Assisting Application\n\nApplication Version:\t\t50\nAssistant Version:\t\t50.5.21.1")
+		talk('MARK 68 version 12.7.4')
+		messagebox.showinfo("MARK", "MARK 68 (MRK LXVIII) PC Assisting Application\n\nApplication Version:\t52\nAssistant Version:\t\t52.0.0.1")
 
 	elif '=' in command:
 		ans = round(eval(command.replace('=', '')), 3)
@@ -313,11 +292,15 @@ def run(e):
 		messagebox.showinfo('Details', data)
 
 	elif 'help' in command:
-		talk('Opening the help document. wait a second.')
+		talk('Opening the old help document written for MARK 50 Application. wait a second.')
 		os.startfile('src\\help.pdf')
 	
 	elif 'search' in command:
 		search()
+
+	elif 'digital clock' in command:
+		talk('Initiating Built-In Digital Clock')
+		clock()
 
 	elif 'facebook' in command:
 		talk('Opening Facebook from your web browser. Just a moment')
@@ -486,8 +469,44 @@ def run(e):
 		except:
 			pass
 
+	elif 'volume up' in command:
+		talk('Increasing volume')
+		pyautogui.press("volumeup")
+		pyautogui.press("volumeup")
+		pyautogui.press("volumeup")
+		pyautogui.press("volumeup")
+
+	elif 'volume down' in command:
+		talk('Decreasing volume')
+		pyautogui.press("volumedown")
+		pyautogui.press("volumedown")
+		pyautogui.press("volumedown")
+		pyautogui.press("volumedown")
+
+	elif 'mute/unmute' in command:
+		talk('Sound muted')
+		pyautogui.press("volumemute")
+
 	elif 'zip file extracter' in command:
 		zipFile()
+
+	elif 'play ' in command:
+		try:
+			import pywhatkit
+			song = command.replace('play ', '')
+			talk('Playing, ', song)
+			pywhatkit.playonyt(song)
+		except Exception as e:
+			talk(e)
+
+	elif 'ip address' in command:
+		speak("Checking") 
+		try: 
+			ipAdd = requests.get('https://api.ipify.org').text 
+			speak("your ip adress is ", ipAdd)
+			messagebox.showinfo('IP Address', 'Your IP Address is: ' + ipAdd)
+		except Exception as e: 
+			speak("network is weak, please try again some time later") 
 
 	elif 'automatic file organizer' in command:
 		organize()
@@ -680,10 +699,6 @@ def run(e):
 	
 	elif 'access' in command:
 		search()
-	
-	#elif 'uninstall mark 50' in command:
-	#	talk('Getting Ready to uninstall MARK 50')
-	#	import uninstall
 
 	else:
 		try:
@@ -696,93 +711,78 @@ def run(e):
 '''			Background Animating			'''
 
 class AnimateGif(object):
-    def __init__(self, image):
-        self._frames = []
-        img = Image.open(image)
-        for frame in ImageSequence.Iterator(img):
-            photo = ImageTk.PhotoImage(frame)
-            photo.delay = frame.info['duration'] * 10
-            self._frames.append(photo)
+	def __init__(self, image):
+		self._frames = []
+		img = Image.open(image)
+		for frame in ImageSequence.Iterator(img):
+			photo = ImageTk.PhotoImage(frame)
+			photo.delay = frame.info['duration'] * 10
+			self._frames.append(photo)
 
-    def __len__(self):
-        return len(self._frames)
-    
-    def __getitem__(self, frame_num):
-        return self._frames[frame_num]
-    
+	def __len__(self):
+		return len(self._frames)
+	
+	def __getitem__(self, frame_num):
+		return self._frames[frame_num]
+	
 def update_label_image(label, ani_img, ms_delay, frame_num):
-    global cancel_id
-    label.configure(image=ani_img[frame_num])
-    frame_num = (frame_num + 1) % len(ani_img)
-    cancel_id = root.after(ms_delay, update_label_image, label, ani_img, ms_delay, frame_num)
-    
+	global cancel_id
+	label.configure(image=ani_img[frame_num])
+	frame_num = (frame_num + 1) % len(ani_img)
+	cancel_id = root.after(ms_delay, update_label_image, label, ani_img, ms_delay, frame_num)
+	
 def enable_animation():
-    global cancel_id
-    if cancel_id is None:
-        ms_delay = 5000 // len(ani_img)
-        cancel_id = root.after(ms_delay, update_label_image, animation, ani_img, ms_delay, 0)
+	global cancel_id
+	if cancel_id is None:
+		ms_delay = 5000 // len(ani_img)
+		cancel_id = root.after(ms_delay, update_label_image, animation, ani_img, ms_delay, 0)
 
 def cancel_animation():
-    global cancel_id
-    if cancel_id is not None:
-        root.after_cancel(cancel_id)
-        cancel_id = None
+	global cancel_id
+	if cancel_id is not None:
+		root.after_cancel(cancel_id)
+		cancel_id = None
 
 '''------------------------------------------'''
 
 pygame.mixer.music.load('src\\greeting.mp3')
 pygame.mixer.music.play(loops=0)
-'''
+
+time.sleep(17)
+
+hour = datetime.datetime.now().hour
+
+if hour >= 0 and hour < 12:
+	msg = 'Good Morning, '
+elif hour >= 12 and hour < 17:
+	msg = 'Good Afternoon, '
+elif hour >= 17 and hour < 22:
+	msg = 'Good Evening, '
 else:
-	hour = datetime.datetime.now().hour
+	pass
 
-	if hour >= 0 and hour < 12:
-		msg = 'Good Morning, '
-	elif hour >= 12 and hour < 17:
-		msg = 'Good Afternoon, '
-	elif hour >= 17 and hour < 22:
-		msg = 'Good Evening, '
-	else:
-		pass
-	
-	try:
-		name = os.environ['USERPROFILE'][9:]
-		username = name.split()[1]
-	except:
-		username = os.environ['USERPROFILE'][9:]
+username = os.environ['USERPROFILE'][9:]
 
+engine.setProperty('voice', voice[0].id)
+talk('MARK 68 is now online. Initializing JARVIS PC Assistant.')
+talk("Getting System ready...")
+time.sleep(1)
+
+try:
 	engine.setProperty('voice', voice[0].id)
-	talk('MARK 50 is now online. Initializing JARVIS PC Assistant.')
-	talk('Activating all the protocols.')
-	talk('Keyboard Automation Activated.')
-	time.sleep(1)
+except:
+	engine.setProperty('voice', voice[0].id)
 
-	try:
-		engine.setProperty('voice', voice[0].id)
-	except:
-		engine.setProperty('voice', voice[0].id)
 
-	try:
-		search2 = f"temperature in"
-		url = f'https://www.google.com/search?q={search2}'
-		r = requests.get(url)
-		data = BeautifulSoup(r.text, "html.parser")
-		temp = data.find("div", class_="BNeawe").text
-	except:
-		pass
+talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p'))
 
-	try:
-		talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p') + '. The weather in current location is ' + temp)
-	except:
-		talk(msg + 'its ' + datetime.datetime.now().strftime('%I:%M %p'))
+talk(f'Hello {username}! I am JARVIS! Your PC Assistant.')
 
-	talk(f'Hello Mister {username}! I\'m JARVIS! Your PC Assistant.')
-'''
 
 #Main UI
 
 root = Tk()
-root.title('MARK 50')
+root.title('MARK 68')
 root.geometry('260x230+600+400')
 ico = root.iconbitmap('icon.ico')
 root.resizable(0, 0)
@@ -798,17 +798,17 @@ enable_animation()
 #UI Widgets
 values_ = (
 			'Time', 'Date', 'About You', 'Version', '= ', 'PC Usage','Create Python File', 
-			'Screenshot','PC Info','Global COVID','Search ',
-		   	'Facebook','Instagram','YouTube','Stackoverflow','Google','CPU','Cores',
-		   	'RAM Percentage','Available RAM','Used RAM','Total RAM','Offline',
-		   	'Temperature in','Pomodoro','Help','Play Song','Pause Song','Stop Song',
-		   	'Video','ZIP File Extracter','Settings','Automatic File Organizer',
-		   	'Shutdown','Restart','Log Off','Lock','Hibernate','Wiki ','This PC',
-		   	'Notepad','About Windows','Wordpad','Management','Programs','System Info',
-		   	'Command Prompt','Task Manager','Registry Editor','System Volume','Services',
-		   	'Restore','MRT','Defrag','Control Panel','Disk Cleanup','Character Map',
-		   	'diskpart','VLC Meida Player','AIMP Music Player','ZOOM','Sublime Text',
-		   	'PyScripter','VS Code','Word','PowerPoint','Excel', 'Access',
+			'Screenshot','PC Info','Global COVID','Search ', 'Digital Clock', 'IP Address',
+			'Facebook','Instagram','YouTube','Stackoverflow','Google','CPU','Cores',
+			'RAM Percentage','Available RAM','Used RAM','Total RAM','Offline', 'Play ', 'Volume UP', 'Volume DOWN', 'MUTE/UNMUTE',
+			'Temperature in','Pomodoro','Help','Play Song','Pause Song','Stop Song',
+			'Video','ZIP File Extracter','Settings','Automatic File Organizer',
+			'Shutdown','Restart','Log Off','Lock','Hibernate','Wiki ','This PC',
+			'Notepad','About Windows','Wordpad','Management','Programs','System Info',
+			'Command Prompt','Task Manager','Registry Editor','System Volume','Services',
+			'Restore','MRT','Defrag','Control Panel','Disk Cleanup','Character Map',
+			'diskpart','VLC Meida Player','AIMP Music Player','ZOOM','Sublime Text',
+			'PyScripter','VS Code','Word','PowerPoint','Excel', 'Access',
 		   )
 
 
