@@ -500,13 +500,13 @@ def run(e):
 			talk(e)
 
 	elif 'ip address' in command:
-		speak("Checking") 
+		talk("Checking") 
 		try: 
 			ipAdd = requests.get('https://api.ipify.org').text 
-			speak("your ip adress is ", ipAdd)
+			talk("your ip adress is " + ipAdd)
 			messagebox.showinfo('IP Address', 'Your IP Address is: ' + ipAdd)
 		except Exception as e: 
-			speak("network is weak, please try again some time later") 
+			talk("network is weak, please try again some time later")
 
 	elif 'automatic file organizer' in command:
 		organize()
