@@ -8,7 +8,7 @@ Welcome to the MARK 68. JARVIS PC Assistant is the next level free assisting sof
 MARK is open source community application. It works all the new Windows version Like Windows 8.1, 10 and Windows 11. This Assistant created for make your computer easier to use.
 
 ## New Features
-- Online YouTube listening ability
+- songs listening ability via YouTube
 - Multimedia Controls (Volume up, down and mute)
 - File Organizer
 - ZIP File Extractor
