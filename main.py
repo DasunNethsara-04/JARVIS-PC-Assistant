@@ -212,7 +212,7 @@ except Exception as e:
 
 # main window
 root = ctk.CTk()
-root.title("JARVIS Asistant")
+root.title("JARVIS Assistant")
 width_of_window: int = 940
 height_of_window: int = 550
 screen_width = root.winfo_screenwidth()
@@ -226,7 +226,7 @@ root.geometry(
 root.iconbitmap("./src/ICON.ico")
 
 # widgets
-ctk.CTkLabel(root, text="JARVIS PC Asistant", font=("Times", 35)).pack(pady=20)
+ctk.CTkLabel(root, text="JARVIS PC Assistant", font=("Times", 35)).pack(pady=20)
 
 # Frames
 frm1 = ctk.CTkFrame(root, width=280)
