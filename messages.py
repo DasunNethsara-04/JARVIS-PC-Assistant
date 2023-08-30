@@ -43,3 +43,5 @@ aboutAns: list = [
     "Mr. Nethsara",
     "Mr. Nethsara developed my progarm",
 ]
+
+thank: list = ['']

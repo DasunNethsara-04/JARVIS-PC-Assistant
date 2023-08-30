@@ -3,7 +3,9 @@ from CTkMessagebox import CTkMessagebox
 import customtkinter as ctk
 import PySimpleGUI as sg
 from PIL import Image
-import pyautogui, datetime, messages, pyttsx3, tkinter, pygame, random, psutil, time, os, requests
+import datetime, pyttsx3, tkinter, random, os, requests, CTkToolTip, wikipedia, psutil, messages, threading, requests
+from tkinter import filedialog
+from functions import *
 
 # theme
 ctk.set_appearance_mode("dark")
@@ -15,59 +17,10 @@ voice = engine.getProperty("voices")
 engine.setProperty("rate", 174)
 engine.setProperty("volume", 2.0)
 
-pygame.mixer.init()
-
-
-# functions
-def talk(audio):
-    engine.say(audio)
-    engine.runAndWait()
-
-
-def playTrack(songClip):
-    pygame.mixer.music.load(songClip)
-    pygame.mixer.music.play()
-
-
-def shutdown():
-    playTrack("./src/voice/caged_sleep_0.wav")
-    time.sleep(3)
-    playTrack("./src/voice/caged_sleep_2.wav")
-    os.system("shutdown.exe -s -t 00")
-
-
-def restart():
-    playTrack("./src/voice/caged_sleep_0.wav")
-    time.sleep(3)
-    playTrack("./src/voice/caged_sleep_2.wav")
-    os.system("shutdown.exe -s -t 00")
-
 
 def logOff():
     talk(random.choice(messages.ok))
     os.system("shutdown.exe -l")
-
-
-def lock():
-    # talk(random.choice(messages.ok))
-    lst: list = [
-        "./src/voice/caged_confirm_4.wav",
-        "./src/voice/caged_confirm_5.wav",
-        "./src/voice/caged_confirm_9.wav",
-    ]
-    playTrack(random.choice(lst))
-    time.sleep(1)
-    os.system("rundll32.exe user32.dll, LockWorkStation")
-
-
-def volDown():
-    # talk(random.choice(messages.ok))
-    pyautogui.press("volumedown")
-
-
-def volUp():
-    # talk(random.choice(messages.ok))
-    pyautogui.press("volumeup")
 
 
 def updateCpuUtilization() -> float:
@@ -76,11 +29,16 @@ def updateCpuUtilization() -> float:
     cpuLabel.after(1000, updateCpuUtilization)
 
 
-def updateRamUsage() -> float:
+def updateRamUsage1() -> float:
     used = round((psutil.virtual_memory().used) / (1024**3), 2)
+    ramLabel1.configure(text=f"{used}GB")
+    ramLabel1.after(1000, updateRamUsage1)
+
+
+def updateRamUsage2() -> float:
     total = round((psutil.virtual_memory().total) / (1024**3), 2)
-    ramLabel.configure(text=f"{used}GB / {total}GB")
-    ramLabel.after(1000, updateRamUsage)
+    ramLabel2.configure(text=f"{total}GB")
+    ramLabel2.after(1000, updateRamUsage2)
 
 
 def botAns(text):
@@ -88,8 +46,43 @@ def botAns(text):
     talk(text)
 
 
-def change_appearance_mode_event(new_appearance_mode: str):
+def change_appearance_mode_event(new_appearance_mode):
     ctk.set_appearance_mode(new_appearance_mode)
+
+
+def talk(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+
+def get_current_time():
+    url = "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Colombo"  # Replace with the actual API URL
+
+    def make_api_request():
+        while True:
+            response = requests.get(url)
+            if response.status_code == 200:
+                current_time = response.json()["time"]
+                date = response.json()["date"]
+                timeZone = response.json()["timeZone"]
+                # print("Current time:", current_time)
+            else:
+                print("Error:", response.status_code)
+                import datetime
+
+                current_time = datetime.datetime.now().strftime("%I:%M %p")
+                date = datetime.date.today()
+                timeZone = "N/A"
+
+            timeabel.configure(text=current_time)
+            dateLabel.configure(text=date)
+            timeZonelbl.configure(text=timeZone)
+
+            time.sleep(1)  # Wait for 1 second before making the next request
+
+    # Create a new thread and start it
+    api_thread = threading.Thread(target=make_api_request)
+    api_thread.start()
 
 
 def run(event):
@@ -103,14 +96,7 @@ def run(event):
             if response.status_code == 200:
                 data = response.json()
                 current_time = data["time"]
-                if (
-                    int(current_time.split(":")[0]) >= 0
-                    and int(current_time.split(":")[0]) < 12
-                ):
-                    amPM = "AM"
-                else:
-                    amPM = "PM"
-                botAns("Current time is: " + current_time + amPM)
+                botAns("Current time is: " + current_time)
 
             else:
                 botAns("Error: ", response.status_code)
@@ -121,9 +107,6 @@ def run(event):
         botAns("Today is " + str(datetime.date.today()) + " sir.")
 
     elif "about you" in userAns:
-        botAns(
-            "Hello sir! I am JARVIS. Your PC Assistant. JARVIS stands for, Just A Rather Very Intelligent System. I am here to assist you with the varieties tasks is best I can."
-        )
         playTrack("./src/voice/caged_intro_2.wav")
 
     elif "version" in userAns:
@@ -140,6 +123,44 @@ def run(event):
             sg.popup_notify(f"Answer is {ans}", title="Answer")
         except ValueError as e:
             botAns("An error found: ", e)
+
+    elif "wiki" in userAns:
+        info: str = userAns.replace("wiki ", "")
+        try:
+            botAns("Searching for " + info)
+            res = wikipedia.summary(info, 2)
+            talk("Search found. Let me deliver it for you.")
+            botAns(res)
+        except:
+            playTrack("./src/voice/caged_network_lost_wifi.wav")
+            pass
+
+    elif "format" in userAns:
+        path = filedialog.askdirectory()
+        path = path[:2]
+        print(path)
+        format_partition_windows(path)
+
+    elif "youtube" in userAns:
+        try:
+            import pywhatkit
+
+            song = userAns.replace("youtube ", "")
+            botAns(f"Searching for {song}")
+            pywhatkit.playonyt(song)
+        except:
+            playTrack("./src/voice/caged_network_lost_wifi.wav")
+            pass
+
+    elif "ip address" in userAns:
+        talk("Checking")
+        try:
+            ipAdd = requests.get("https://api.ipify.org").text
+            botAns("your ip adress is " + ipAdd)
+            # messagebox.showinfo('IP Address', 'Your IP Address is: ' + ipAdd)
+        except Exception as e:
+            playTrack("./src/voice/caged_network_lost_wifi.wav")
+
     else:
         voiceList: list = [
             "./src/voice/caged_repeat_1.wav",
@@ -151,6 +172,7 @@ def run(event):
 
 
 # time api
+
 try:
     response = requests.get(
         "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Colombo"
@@ -222,7 +244,7 @@ y_cordinate = (screen_height / 2) - (height_of_window / 2)
 root.geometry(
     "%dx%d+%d+%d" % (width_of_window, height_of_window, x_cordinate, y_cordinate)
 )
-# root.resizable(0, 0)
+root.resizable(0, 0)
 root.iconbitmap("./src/ICON.ico")
 
 # widgets
@@ -232,25 +254,51 @@ ctk.CTkLabel(root, text="JARVIS PC Assistant", font=("Times", 35)).pack(pady=20)
 frm1 = ctk.CTkFrame(root, width=280)
 frm1.place(x=750, y=230)
 
-frm2 = ctk.CTkFrame(root, width=280, height=130)
-frm2.place(x=650, y=70)
+frm2 = ctk.CTkFrame(root, width=200, height=130)
+frm2.place(x=730, y=70)
 
 frm3 = ctk.CTkFrame(root, width=600, height=550)
-frm3.place(x=30, y=150)
+frm3.place(x=30, y=170)
 
-ctk.CTkLabel(frm2, text="CPU :", font=("Poppins", 25)).place(x=5, y=30)
+frm4 = ctk.CTkFrame(root, width=500, height=90)
+frm4.place(x=30, y=70)
+
+# ============ PC Usages ============
+ctk.CTkLabel(frm2, text="CPU :", font=("Poppins", 25)).place(x=5, y=10)
 cpuLabel = ctk.CTkLabel(frm2, font=("Poppins", 25), text_color="red")
-cpuLabel.place(x=75, y=30)
-ctk.CTkLabel(frm2, text="RAM :", font=("Poppins", 25)).place(x=5, y=75)
-ramLabel = ctk.CTkLabel(frm2, font=("Poppins", 25), text_color="green")
-ramLabel.place(x=75, y=75)
+cpuLabel.place(x=120, y=10)
+ctk.CTkLabel(frm2, text="Used RAM :", font=("Poppins", 20)).place(x=5, y=55)
+ramLabel1 = ctk.CTkLabel(frm2, font=("Poppins", 20), text_color="green")
+ramLabel1.place(x=120, y=55)
 
+ctk.CTkLabel(frm2, text="Full RAM :", font=("Poppins", 20)).place(x=5, y=90)
+ramLabel2 = ctk.CTkLabel(frm2, font=("Poppins", 20), text_color="green")
+ramLabel2.place(x=120, y=90)
+# ============  ============
+
+# ============ Time ============
+ctk.CTkLabel(frm4, text="Time :", font=("Poppins", 25)).place(x=170, y=10)
+timeabel = ctk.CTkLabel(frm4, font=("DS-Digital", 40), text_color="red")
+timeabel.place(x=250, y=10)
+
+ctk.CTkLabel(frm4, text="Date :", font=("Poppins", 20)).place(x=5, y=55)
+dateLabel = ctk.CTkLabel(frm4, font=("Poppins", 20), text_color="#ffff00")
+dateLabel.place(x=70, y=55)
+
+ctk.CTkLabel(frm4, text="Time Zone :", font=("Poppins", 20)).place(x=210, y=55)
+timeZonelbl = ctk.CTkLabel(frm4, font=("Poppins", 20), text_color="green")
+timeZonelbl.place(x=330, y=55)
+# ============  ============
+
+# ============ Input Box and Log area ============
 msgBox = ctk.CTkTextbox(frm3, font=("Calibri", 17), width=600, height=250)
 msgBox.pack(padx=5, pady=5)
 
 txtBox = ctk.CTkEntry(frm3, font=("Calibri", 15), width=600)
-txtBox.pack(pady=25, padx=5)
-# images
+txtBox.pack(pady=15, padx=5)
+# ============  ============
+
+# ============ Images ============
 image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "src")
 volUP_image = ctk.CTkImage(
     Image.open(os.path.join(image_path, "volume-up.png")), size=(24, 24)
@@ -258,37 +306,77 @@ volUP_image = ctk.CTkImage(
 volDown_image = ctk.CTkImage(
     Image.open(os.path.join(image_path, "volume-down.png")), size=(24, 24)
 )
-send_image = ctk.CTkImage(
-    Image.open(os.path.join(image_path, "send.png")), size=(48, 48)
+shutdown_image = ctk.CTkImage(
+    Image.open(os.path.join(image_path, "shutdown.png")), size=(24, 24)
+)
+resrart_image = ctk.CTkImage(
+    Image.open(os.path.join(image_path, "restart.png")), size=(24, 24)
+)
+logOff_image = ctk.CTkImage(
+    Image.open(os.path.join(image_path, "sign-out.png")), size=(24, 24)
+)
+lock_image = ctk.CTkImage(
+    Image.open(os.path.join(image_path, "lock.png")), size=(24, 24)
+)
+# ============  ============
+
+# ============ Buttons ============
+volUpBtn = ctk.CTkButton(frm1, image=volUP_image, text="", command=volUp)
+volUpBtn.pack(pady=10, padx=20)
+volUpTooltip = CTkToolTip.CTkToolTip(volUpBtn, delay=0.1, message="Increase Volume")
+
+volDownBtn = ctk.CTkButton(frm1, image=volDown_image, text="", command=volDown)
+volDownBtn.pack(pady=10, padx=20)
+volDownTooltip = CTkToolTip.CTkToolTip(volDownBtn, delay=0.1, message="Decrease Volume")
+
+shutdownBtn = ctk.CTkButton(
+    frm1, text="", image=shutdown_image, font=("Poppins", 15), command=shutdown
+)
+shutdownBtn.pack(pady=10, padx=20)
+shutdownTooltip = CTkToolTip.CTkToolTip(
+    shutdownBtn, delay=0.1, message="Shutdown you computer."
 )
 
-# frm2 = ctk.CTkFrame(root)
-# frm2.pack(pady=20, padx=50)
-ctk.CTkButton(frm1, image=volUP_image, text="", command=volUp).pack(pady=10, padx=20)
-ctk.CTkButton(frm1, image=volDown_image, text="", command=volDown).pack(
-    pady=10, padx=20
+restartBtn = ctk.CTkButton(
+    frm1, text="", image=resrart_image, font=("Poppins", 15), command=restart
 )
-ctk.CTkButton(frm1, text="Shutdown", font=("Poppins", 15), command=shutdown).pack(
-    pady=10, padx=20
+restartBtn.pack(pady=10, padx=20)
+restartTooltip = CTkToolTip.CTkToolTip(
+    restartBtn, delay=0.1, message="Restart you computer."
 )
-ctk.CTkButton(frm1, text="Restart", font=("Poppins", 15), command=restart).pack(
-    pady=10, padx=20
+logOffBtn = ctk.CTkButton(
+    frm1, text="", image=logOff_image, font=("Poppins", 15), command=logOff
 )
-ctk.CTkButton(frm1, text="Log Off", font=("Poppins", 15), command=logOff).pack(
-    pady=10, padx=20
+logOffBtn.pack(pady=10, padx=20)
+logOffTooltip = CTkToolTip.CTkToolTip(
+    logOffBtn, delay=0.1, message="Sign out from  your computer."
 )
-ctk.CTkButton(frm1, text="Lock", font=("Poppins", 15), command=lock).pack(
-    pady=10, padx=20
+lockBtn = ctk.CTkButton(
+    frm1, text="", image=lock_image, font=("Poppins", 15), command=lock
 )
+lockBtn.pack(pady=10, padx=20)
+lockTooltip = CTkToolTip.CTkToolTip(lockBtn, delay=0.1, message="Lock  your computer.")
+# ============  ============
 
+# ============ Option Menu ============
 appearance_mode_optionemenu = ctk.CTkOptionMenu(
     root,
     values=["Dark", "Light", "System"],
     command=change_appearance_mode_event,
 )
 appearance_mode_optionemenu.place(x=30, y=500)
+# ============  ============
 
+# ============ Key Binding ============
 root.bind("<Return>", run)
+# ============  ============
+
+# ============ Calling bootup functions ============
 updateCpuUtilization()
-updateRamUsage()
+updateRamUsage1()
+updateRamUsage2()
+get_current_time()
+# ============  ============
+
+
 root.mainloop()
