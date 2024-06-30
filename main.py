@@ -18,7 +18,7 @@ engine.setProperty("rate", 174)
 engine.setProperty("volume", 2.0)
 
 
-def logOff():
+def logOff() -> None:
     talk(random.choice(messages.ok))
     os.system("shutdown.exe -l")
 
@@ -41,21 +41,45 @@ def updateRamUsage2() -> float:
     ramLabel2.after(1000, updateRamUsage2)
 
 
-def botAns(text):
+def botAns(text) -> None:
     msgBox.insert(tkinter.END, text=f"JARVIS: {text}\n")
     talk(text)
 
 
-def change_appearance_mode_event(new_appearance_mode):
+def change_appearance_mode_event(new_appearance_mode) -> None:
     ctk.set_appearance_mode(new_appearance_mode)
 
+def change_color_theme_event(new_color_mode) -> None:
+    ctk.set_default_color_theme(new_color_mode)
 
-def talk(audio):
+def settingsPanel() -> None:
+    settings_window = ctk.CTkToplevel()
+    settings_window.title("Settings - JARVIS PC Assistant")
+    settings_window.resizable(width=False, height=False)
+
+    # settings panel widgets
+    ctk.CTkLabel(settingsPanel, text="Appearance Mode", font=("Arial", 14)).grid(row=1, column=0)
+    appearance_mode_optionemenu = ctk.CTkOptionMenu(
+        settings_window,
+        values=["Dark", "Light", "System"],
+        command=change_appearance_mode_event,
+    )
+    appearance_mode_optionemenu.grid(row=1, column=1)
+    
+    ctk.CTkLabel(settingsPanel, text="Colour Theme", font=("Arial", 14)).grid(row=2, column=0)
+    theme_color_optionemenu = ctk.CTkOptionMenu(
+        settings_window,
+        values=["blue", "dark-blue", "green"],
+        command=change_color_theme_event,
+    )
+    theme_color_optionemenu.grid(row=1, column=1)
+
+def talk(audio) -> None:
     engine.say(audio)
     engine.runAndWait()
 
 
-def get_current_time():
+def get_current_time() -> None:
     url = "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Colombo"  # Replace with the actual API URL
 
     def make_api_request():
@@ -144,7 +168,6 @@ def run(event):
     elif "youtube" in userAns:
         try:
             import pywhatkit
-
             song = userAns.replace("youtube ", "")
             botAns(f"Searching for {song}")
             pywhatkit.playonyt(song)
@@ -278,7 +301,7 @@ ramLabel2.place(x=120, y=90)
 
 # ============ Time ============
 ctk.CTkLabel(frm4, text="Time :", font=("Poppins", 25)).place(x=170, y=10)
-timeabel = ctk.CTkLabel(frm4, font=("DS-Digital", 40), text_color="red")
+timeabel = ctk.CTkLabel(frm4, font=("DS-Digital", 30), text_color="red")
 timeabel.place(x=250, y=10)
 
 ctk.CTkLabel(frm4, text="Date :", font=("Poppins", 20)).place(x=5, y=55)
@@ -358,13 +381,10 @@ lockBtn.pack(pady=10, padx=20)
 lockTooltip = CTkToolTip.CTkToolTip(lockBtn, delay=0.1, message="Lock  your computer.")
 # ============  ============
 
-# ============ Option Menu ============
-appearance_mode_optionemenu = ctk.CTkOptionMenu(
-    root,
-    values=["Dark", "Light", "System"],
-    command=change_appearance_mode_event,
-)
-appearance_mode_optionemenu.place(x=30, y=500)
+# ============ Settings Menu ============
+
+ctk.CTkButton(root, text="Settings", font=("Arial", 14), command=settingsPanel).place(x=30, y=500)
+
 # ============  ============
 
 # ============ Key Binding ============
