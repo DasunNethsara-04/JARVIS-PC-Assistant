@@ -4,6 +4,7 @@ import pygame
 import PySimpleGUI as sg
 import random
 import pyautogui
+import os
 
 pygame.mixer.init()
 
@@ -41,14 +42,14 @@ def shutdown():
     playTrack("./src/voice/caged_sleep_0.wav")
     time.sleep(3)
     playTrack("./src/voice/caged_sleep_2.wav")
-    # os.system("shutdown.exe -s -t 00")
+    os.system("shutdown.exe -s -t 00")
 
 
 def restart():
     playTrack("./src/voice/caged_sleep_0.wav")
     time.sleep(3)
     playTrack("./src/voice/caged_sleep_2.wav")
-    # os.system("shutdown.exe -s -t 00")
+    os.system("shutdown.exe -s -t 00")
 
 
 def lock():
@@ -60,7 +61,7 @@ def lock():
     ]
     playTrack(random.choice(lst))
     time.sleep(1)
-    # os.system("rundll32.exe user32.dll, LockWorkStation")
+    os.system("rundll32.exe user32.dll, LockWorkStation")
 
 
 def volDown():

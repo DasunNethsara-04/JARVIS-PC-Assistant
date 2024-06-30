@@ -218,64 +218,64 @@ def run(event):
 
 
 # time api
-# try:
-#     response = requests.get(
-#         "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Colombo"
-#     )
-#     if response.status_code == 200:
-#         data = response.json()
-#         current_time = data["time"]
-#         # botAns("Current time is: " + current_time)
-#         hour = int(current_time.split(":")[0])
-#         if hour >= 0 and hour < 12:
-#             # msg = "Good Morning, "
-#             playTrack("./src/voice/caged_listening_on_morning.wav")
-#             time.sleep(2)
-#             playTrack("./src/voice/caged_listening_on_6.wav")
-#             time.sleep(3)
-#             playTrack("./src/voice/caged_listening_on_3.wav")
-#         elif hour >= 12 and hour < 17:
-#             # msg = "Good Afternoon, "
-#             playTrack("./src/voice/caged_listening_on_afternoon.wav")
-#             time.sleep(2)
-#             playTrack("./src/voice/caged_listening_on_6.wav")
-#             time.sleep(3)
-#             playTrack("./src/voice/caged_listening_on_3.wav")
-#         elif hour >= 17 and hour < 22:
-#             playTrack("./src/voice/caged_listening_on_evening.wav")
-#             time.sleep(2)
-#             playTrack("./src/voice/caged_listening_on_6.wav")
-#             time.sleep(3)
-#             playTrack("./src/voice/caged_listening_on_3.wav")
-#         else:
-#             pass
-#         # talk(msg)
-#     else:
-#         botAns("Error: ", response.status_code)
-# except Exception as e:
-#     hour = datetime.datetime.now().hour
-#     if hour >= 0 and hour < 12:
-#         # msg = "Good Morning, "
-#         playTrack("./src/voice/caged_listening_on_morning.wav")
-#         time.sleep(2)
-#         playTrack("./src/voice/caged_listening_on_6.wav")
-#         time.sleep(3)
-#         playTrack("./src/voice/caged_listening_on_3.wav")
-#     elif hour >= 12 and hour < 17:
-#         # msg = "Good Afternoon, "
-#         playTrack("./src/voice/caged_listening_on_afternoon.wav")
-#         time.sleep(2)
-#         playTrack("./src/voice/caged_listening_on_6.wav")
-#         time.sleep(3)
-#         playTrack("./src/voice/caged_listening_on_3.wav")
-#     elif hour >= 17 and hour < 20:
-#         playTrack("./src/voice/caged_listening_on_evening.wav")
-#         time.sleep(2)
-#         playTrack("./src/voice/caged_listening_on_6.wav")
-#         time.sleep(3)
-#         playTrack("./src/voice/caged_listening_on_3.wav")
-#     else:
-#         pass
+try:
+    response = requests.get(
+        "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Colombo"
+    )
+    if response.status_code == 200:
+        data = response.json()
+        current_time = data["time"]
+        # botAns("Current time is: " + current_time)
+        hour = int(current_time.split(":")[0])
+        if hour >= 0 and hour < 12:
+            # msg = "Good Morning, "
+            playTrack("./src/voice/caged_listening_on_morning.wav")
+            time.sleep(2)
+            playTrack("./src/voice/caged_listening_on_6.wav")
+            time.sleep(3)
+            playTrack("./src/voice/caged_listening_on_3.wav")
+        elif hour >= 12 and hour < 17:
+            # msg = "Good Afternoon, "
+            playTrack("./src/voice/caged_listening_on_afternoon.wav")
+            time.sleep(2)
+            playTrack("./src/voice/caged_listening_on_6.wav")
+            time.sleep(3)
+            playTrack("./src/voice/caged_listening_on_3.wav")
+        elif hour >= 17 and hour < 22:
+            playTrack("./src/voice/caged_listening_on_evening.wav")
+            time.sleep(2)
+            playTrack("./src/voice/caged_listening_on_6.wav")
+            time.sleep(3)
+            playTrack("./src/voice/caged_listening_on_3.wav")
+        else:
+            pass
+        # talk(msg)
+    else:
+        botAns("Error: ", response.status_code)
+except Exception as e:
+    hour = datetime.datetime.now().hour
+    if hour >= 0 and hour < 12:
+        # msg = "Good Morning, "
+        playTrack("./src/voice/caged_listening_on_morning.wav")
+        time.sleep(2)
+        playTrack("./src/voice/caged_listening_on_6.wav")
+        time.sleep(3)
+        playTrack("./src/voice/caged_listening_on_3.wav")
+    elif hour >= 12 and hour < 17:
+        # msg = "Good Afternoon, "
+        playTrack("./src/voice/caged_listening_on_afternoon.wav")
+        time.sleep(2)
+        playTrack("./src/voice/caged_listening_on_6.wav")
+        time.sleep(3)
+        playTrack("./src/voice/caged_listening_on_3.wav")
+    elif hour >= 17 and hour < 20:
+        playTrack("./src/voice/caged_listening_on_evening.wav")
+        time.sleep(2)
+        playTrack("./src/voice/caged_listening_on_6.wav")
+        time.sleep(3)
+        playTrack("./src/voice/caged_listening_on_3.wav")
+    else:
+        pass
 
 # main window
 root = ctk.CTk()
