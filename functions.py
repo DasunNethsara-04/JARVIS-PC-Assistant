@@ -1,7 +1,6 @@
 import subprocess
 import time
 import pygame
-import os
 import PySimpleGUI as sg
 import random
 import pyautogui

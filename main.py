@@ -6,6 +6,8 @@ from PIL import Image
 import datetime, pyttsx3, tkinter, random, os, requests, CTkToolTip, wikipedia, psutil, messages, threading, requests
 from tkinter import filedialog
 from functions import *
+import subprocess
+import platform
 
 # theme
 ctk.set_appearance_mode("dark")
@@ -58,21 +60,22 @@ def settingsPanel() -> None:
     settings_window.resizable(width=False, height=False)
 
     # settings panel widgets
-    ctk.CTkLabel(settingsPanel, text="Appearance Mode", font=("Arial", 14)).grid(row=1, column=0)
+    ctk.CTkLabel(settings_window, text="Appearance Mode", font=("Arial", 14)).grid(row=1, column=0)
     appearance_mode_optionemenu = ctk.CTkOptionMenu(
         settings_window,
         values=["Dark", "Light", "System"],
         command=change_appearance_mode_event,
     )
     appearance_mode_optionemenu.grid(row=1, column=1)
-    
-    ctk.CTkLabel(settingsPanel, text="Colour Theme", font=("Arial", 14)).grid(row=2, column=0)
+
+    ctk.CTkLabel(settings_window, text="Colour Theme", font=("Arial", 14)).grid(row=2, column=0)
     theme_color_optionemenu = ctk.CTkOptionMenu(
         settings_window,
         values=["blue", "dark-blue", "green"],
         command=change_color_theme_event,
     )
-    theme_color_optionemenu.grid(row=1, column=1)
+    theme_color_optionemenu.grid(row=2, column=1)
+
 
 def talk(audio) -> None:
     engine.say(audio)
@@ -164,6 +167,26 @@ def run(event):
         path = path[:2]
         print(path)
         format_partition_windows(path)
+    
+    elif "wifi password" in userAns:
+        if platform.system() == 'Windows':
+            talk("Fetching the saved wifi passwords.  Just a second sir!")
+            time.sleep(1)
+            data = subprocess.check_output(["netsh", "wlan", "show", "profiles"]).decode('utf-8', errors="backslashreplace").split("\n")
+            profiles = [i.split(":")[1][1:-1] for i in data if  "All User Profile" in i]
+
+            for i in profiles:
+                try:
+                    results = subprocess.check_output(["netsh", "wlan", "show", "profile", i, "key=clear"]).decode('utf-8', errors="backslashreplace").split("\n")
+                    results = [b.split(":")[1][1:-1] for b in results if "Key Content" in b]
+                    try:
+                        msgBox.insert(tkinter.END, f"{"{:<30}| {:<}".format(i, results[0])}\n")
+                    except IndexError:
+                        msgBox.insert(tkinter.END, f"{"{:<30}| {:<}".format(i, "")}\n")
+                except subprocess.CalledProcessError:
+                    msgBox.insert(tkinter.END, f"{"{:<30}: {:<}".format(i, "ENCODING ERROR")}\n")
+        else:
+            talk("This feature is not available in this operating system.")
 
     elif "youtube" in userAns:
         try:
@@ -195,65 +218,64 @@ def run(event):
 
 
 # time api
-
-try:
-    response = requests.get(
-        "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Colombo"
-    )
-    if response.status_code == 200:
-        data = response.json()
-        current_time = data["time"]
-        # botAns("Current time is: " + current_time)
-        hour = int(current_time.split(":")[0])
-        if hour >= 0 and hour < 12:
-            # msg = "Good Morning, "
-            playTrack("./src/voice/caged_listening_on_morning.wav")
-            time.sleep(2)
-            playTrack("./src/voice/caged_listening_on_6.wav")
-            time.sleep(3)
-            playTrack("./src/voice/caged_listening_on_3.wav")
-        elif hour >= 12 and hour < 17:
-            # msg = "Good Afternoon, "
-            playTrack("./src/voice/caged_listening_on_afternoon.wav")
-            time.sleep(2)
-            playTrack("./src/voice/caged_listening_on_6.wav")
-            time.sleep(3)
-            playTrack("./src/voice/caged_listening_on_3.wav")
-        elif hour >= 17 and hour < 22:
-            playTrack("./src/voice/caged_listening_on_evening.wav")
-            time.sleep(2)
-            playTrack("./src/voice/caged_listening_on_6.wav")
-            time.sleep(3)
-            playTrack("./src/voice/caged_listening_on_3.wav")
-        else:
-            pass
-        # talk(msg)
-    else:
-        botAns("Error: ", response.status_code)
-except Exception as e:
-    hour = datetime.datetime.now().hour
-    if hour >= 0 and hour < 12:
-        # msg = "Good Morning, "
-        playTrack("./src/voice/caged_listening_on_morning.wav")
-        time.sleep(2)
-        playTrack("./src/voice/caged_listening_on_6.wav")
-        time.sleep(3)
-        playTrack("./src/voice/caged_listening_on_3.wav")
-    elif hour >= 12 and hour < 17:
-        # msg = "Good Afternoon, "
-        playTrack("./src/voice/caged_listening_on_afternoon.wav")
-        time.sleep(2)
-        playTrack("./src/voice/caged_listening_on_6.wav")
-        time.sleep(3)
-        playTrack("./src/voice/caged_listening_on_3.wav")
-    elif hour >= 17 and hour < 20:
-        playTrack("./src/voice/caged_listening_on_evening.wav")
-        time.sleep(2)
-        playTrack("./src/voice/caged_listening_on_6.wav")
-        time.sleep(3)
-        playTrack("./src/voice/caged_listening_on_3.wav")
-    else:
-        pass
+# try:
+#     response = requests.get(
+#         "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Colombo"
+#     )
+#     if response.status_code == 200:
+#         data = response.json()
+#         current_time = data["time"]
+#         # botAns("Current time is: " + current_time)
+#         hour = int(current_time.split(":")[0])
+#         if hour >= 0 and hour < 12:
+#             # msg = "Good Morning, "
+#             playTrack("./src/voice/caged_listening_on_morning.wav")
+#             time.sleep(2)
+#             playTrack("./src/voice/caged_listening_on_6.wav")
+#             time.sleep(3)
+#             playTrack("./src/voice/caged_listening_on_3.wav")
+#         elif hour >= 12 and hour < 17:
+#             # msg = "Good Afternoon, "
+#             playTrack("./src/voice/caged_listening_on_afternoon.wav")
+#             time.sleep(2)
+#             playTrack("./src/voice/caged_listening_on_6.wav")
+#             time.sleep(3)
+#             playTrack("./src/voice/caged_listening_on_3.wav")
+#         elif hour >= 17 and hour < 22:
+#             playTrack("./src/voice/caged_listening_on_evening.wav")
+#             time.sleep(2)
+#             playTrack("./src/voice/caged_listening_on_6.wav")
+#             time.sleep(3)
+#             playTrack("./src/voice/caged_listening_on_3.wav")
+#         else:
+#             pass
+#         # talk(msg)
+#     else:
+#         botAns("Error: ", response.status_code)
+# except Exception as e:
+#     hour = datetime.datetime.now().hour
+#     if hour >= 0 and hour < 12:
+#         # msg = "Good Morning, "
+#         playTrack("./src/voice/caged_listening_on_morning.wav")
+#         time.sleep(2)
+#         playTrack("./src/voice/caged_listening_on_6.wav")
+#         time.sleep(3)
+#         playTrack("./src/voice/caged_listening_on_3.wav")
+#     elif hour >= 12 and hour < 17:
+#         # msg = "Good Afternoon, "
+#         playTrack("./src/voice/caged_listening_on_afternoon.wav")
+#         time.sleep(2)
+#         playTrack("./src/voice/caged_listening_on_6.wav")
+#         time.sleep(3)
+#         playTrack("./src/voice/caged_listening_on_3.wav")
+#     elif hour >= 17 and hour < 20:
+#         playTrack("./src/voice/caged_listening_on_evening.wav")
+#         time.sleep(2)
+#         playTrack("./src/voice/caged_listening_on_6.wav")
+#         time.sleep(3)
+#         playTrack("./src/voice/caged_listening_on_3.wav")
+#     else:
+#         pass
 
 # main window
 root = ctk.CTk()
