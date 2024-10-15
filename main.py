@@ -1,4 +1,6 @@
 # imports
+from typing import Any
+
 from CTkMessagebox import CTkMessagebox
 import customtkinter as ctk
 import PySimpleGUI as sg
@@ -25,19 +27,19 @@ def logOff() -> None:
     os.system("shutdown.exe -l")
 
 
-def updateCpuUtilization() -> float:
+def updateCpuUtilization() -> None:
     util = psutil.cpu_percent()
     cpuLabel.configure(text=f"{util}%")
     cpuLabel.after(1000, updateCpuUtilization)
 
 
-def updateRamUsage1() -> float:
+def updateRamUsage1() -> None:
     used = round((psutil.virtual_memory().used) / (1024**3), 2)
     ramLabel1.configure(text=f"{used}GB")
     ramLabel1.after(1000, updateRamUsage1)
 
 
-def updateRamUsage2() -> float:
+def updateRamUsage2() -> None:
     total = round((psutil.virtual_memory().total) / (1024**3), 2)
     ramLabel2.configure(text=f"{total}GB")
     ramLabel2.after(1000, updateRamUsage2)
@@ -51,12 +53,14 @@ def botAns(text) -> None:
 def change_appearance_mode_event(new_appearance_mode) -> None:
     ctk.set_appearance_mode(new_appearance_mode)
 
+
 def change_color_theme_event(new_color_mode) -> None:
     ctk.set_default_color_theme(new_color_mode)
 
+
 def settingsPanel() -> None:
     settings_window = ctk.CTkToplevel()
-    settings_window.title("Settings - JARVIS PC Assistant")
+    settings_window.title("Settings - MARK PC Assistant")
     settings_window.resizable(width=False, height=False)
 
     # settings panel widgets
@@ -87,9 +91,9 @@ def get_current_time() -> None:
 
     def make_api_request():
         while True:
-            response = requests.get(url)
+            response: Any = requests.get(url)
             if response.status_code == 200:
-                current_time = response.json()["time"]
+                current_time: Any = response.json()["time"]
                 date = response.json()["date"]
                 timeZone = response.json()["timeZone"]
                 # print("Current time:", current_time)
@@ -293,7 +297,7 @@ root.resizable(0, 0)
 root.iconbitmap("./src/ICON.ico")
 
 # widgets
-ctk.CTkLabel(root, text="JARVIS PC Assistant", font=("Times", 35)).pack(pady=20)
+ctk.CTkLabel(root, text="MARK PC Assistant", font=("Times", 35)).pack(pady=20)
 
 # Frames
 frm1 = ctk.CTkFrame(root, width=280)
@@ -413,7 +417,7 @@ ctk.CTkButton(root, text="Settings", font=("Arial", 14), command=settingsPanel).
 root.bind("<Return>", run)
 # ============  ============
 
-# ============ Calling bootup functions ============
+# ============ Calling boot-up functions ============
 updateCpuUtilization()
 updateRamUsage1()
 updateRamUsage2()
