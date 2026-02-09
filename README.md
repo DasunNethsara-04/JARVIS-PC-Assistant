@@ -10,3 +10,7 @@ MARK is open source community application. It works all the new Windows version 
 ## New Features
 - New GUI Engine with new User Interface
 
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=DasunNethsara-04/JARVIS-PC-Assistant&type=date&legend=top-left)](https://www.star-history.com/#DasunNethsara-04/JARVIS-PC-Assistant&type=date&legend=top-left)
